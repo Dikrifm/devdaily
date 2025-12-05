@@ -1,0 +1,9 @@
+/vendor
+/writable
+/.idea
+/.vscode
+/node_modules
+.env
+.DS_Store
+database.sqlite
+**/*.log
