@@ -16,3 +16,7 @@ $routes->get("admin/delete-link/(:num)", "Admin::delete_link/$1");
 $routes->get("admin/regenerate/(:num)", "Admin::generate_ai/$1");
 $routes->get("panel", "Panel::index");
 $routes->get("panel/nuke", "Panel::nuke_db");
+$routes->get("admin/edit-product/(:num)", "Admin::edit_product/$1");
+$routes->post("admin/update-product", "Admin::update_product");
+$routes->get("admin/edit-link/(:num)", "Admin::edit_link/$1");
+$routes->post("admin/update-link", "Admin::update_link");

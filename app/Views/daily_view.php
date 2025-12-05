@@ -11,21 +11,28 @@
     <style>
         .glass { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.5); }
         .dark .glass { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); }
+        /* Animasi Loading */
+        .spinner { border: 2px solid rgba(255,255,255,0.1); border-left-color: #10b981; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 5px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="font-sans min-h-screen bg-slate-50 dark:bg-[#09090b] text-slate-800 dark:text-slate-200">
     
-    <div class="relative h-72 w-full overflow-hidden">
-        <img src="<?= $p['image_url'] ?>" class="w-full h-full object-cover">
+    <div class="relative h-72 w-full overflow-hidden group">
+        <img src="<?= $p['image_url'] ?>" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
         <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-slate-50 dark:to-[#09090b]"></div>
         
         <a href="/index.php" class="absolute top-6 left-6 w-10 h-10 glass rounded-full flex items-center justify-center text-slate-900 dark:text-white hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-colors z-20">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
         </a>
+
+        <a href="/index.php/admin/edit-product/<?= $p['id'] ?>" class="absolute top-6 right-6 w-10 h-10 glass rounded-full flex items-center justify-center text-slate-900 dark:text-white hover:bg-amber-500 hover:text-black hover:border-amber-500 transition-colors z-20">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+        </a>
     </div>
 
     <div class="max-w-md mx-auto px-4 -mt-20 relative z-10 pb-20">
-        <div class="glass rounded-3xl p-6 shadow-xl mb-6 bg-white/80 dark:bg-black/60">
+        <div class="glass rounded-3xl p-6 shadow-xl mb-6 bg-white/80 dark:bg-black/60 backdrop-blur-xl">
             <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold rounded-full uppercase tracking-wider mb-2 inline-block">Market Intelligence</span>
             <h1 class="text-2xl font-extrabold leading-tight mb-2 text-slate-900 dark:text-white"><?= $p['name'] ?></h1>
             <div class="flex items-center gap-2">
@@ -79,13 +86,16 @@
                             <?php if($l['ai_comment']): ?>
                                 <p class="text-xs text-slate-600 dark:text-slate-300 italic leading-relaxed">"<?= $l['ai_comment'] ?>"</p>
                             <?php else: ?>
-                                <a href="/index.php/admin/regenerate/<?= $l['id'] ?>" class="text-[10px] font-bold text-emerald-600 hover:underline">⚡ Analisa AI Sekarang</a>
+                                <a href="/index.php/admin/regenerate/<?= $l['id'] ?>" onclick="this.innerHTML='<span class=\'spinner\'></span> Membaca...'; this.classList.add('text-slate-500')" class="text-[10px] font-bold text-emerald-600 hover:underline">⚡ Analisa AI Sekarang</a>
                             <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="mt-4 flex gap-2">
                         <a href="<?= $l['link'] ?>" target="_blank" class="flex-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-2.5 rounded-xl text-xs font-bold text-center uppercase shadow-lg hover:opacity-90 transition-opacity">Buka Toko</a>
+                        <a href="/index.php/admin/edit-link/<?= $l['id'] ?>" class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-black transition-colors">
+                           ✎
+                        </a>
                     </div>
 
                     <a href="/index.php/admin/delete-link/<?= $l['id'] ?>" onclick="return confirm('Hapus?')" class="absolute top-2 right-2 p-2 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -98,7 +108,6 @@
     </div>
     
     <script>
-        // Script untuk menjaga konsistensi tema saat pindah halaman
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark')
         } else {
