@@ -30,7 +30,7 @@
                 <p class="text-[10px] font-bold opacity-60 tracking-[0.3em] uppercase">Market Intelligence</p>
             </div>
             
-            <button onclick="toggleTheme()" class="glass w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform text-xl">
+            <a href="/index.php/panel" class="glass w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform text-xl">⚙️</a><button onclick="toggleTheme()" class="mr-2 glass w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform text-xl">
                 <span id="icon-sun" class="hidden">☀️</span>
                 <span id="icon-moon">🌙</span>
             </button>
