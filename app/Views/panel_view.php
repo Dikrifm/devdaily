@@ -39,7 +39,37 @@
         </div>
 
         <div class="space-y-6">
-            
+                        <div class="cyber-border p-4 border-blue-900/30">
+                <h3 class="text-xs font-bold text-blue-400 mb-3">WEBSITE IDENTITY & SETTINGS</h3>
+                <form action="/index.php/panel/update-settings" method="post" class="space-y-3">
+                    <?= csrf_field() ?>
+                    
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="col-span-2">
+                            <label class="text-[10px] text-gray-500 uppercase">Nama Utama</label>
+                            <input type="text" name="site_name" value="<?= $config['site_name'] ?>" required>
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-gray-500 uppercase">Ekstensi</label>
+                            <input type="text" name="site_domain" value="<?= $config['site_domain'] ?>">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] text-gray-500 uppercase">Tagline</label>
+                        <input type="text" name="site_tagline" value="<?= $config['site_tagline'] ?>">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] text-gray-500 uppercase">Daftar Badge (Pisahkan dengan koma)</label>
+                        <textarea name="badge_list" class="w-full bg-black border border-gray-800 text-white text-xs p-2 h-20 outline-none focus:border-green-500" placeholder="Pilihan Ibu,Viral,Promo"><?= implode(',', $config['badge_list']) ?></textarea>
+                        <p class="text-[9px] text-gray-600 mt-1">*Badge ini akan muncul di menu Tambah/Edit Produk.</p>
+                    </div>
+
+                    <button type="submit" class="w-full py-2 bg-blue-600/20 border border-blue-600 text-blue-400 text-xs font-bold hover:bg-blue-600 hover:text-white transition">SIMPAN KONFIGURASI</button>
+                </form>
+            </div>
+
             <div class="cyber-border p-4 border-yellow-900/30">
                 <h3 class="text-xs font-bold text-yellow-500 mb-3">ADMIN SECURITY</h3>
                 <form action="/index.php/panel/change-password" method="post" class="space-y-2">

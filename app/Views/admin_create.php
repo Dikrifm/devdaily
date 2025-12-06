@@ -13,7 +13,7 @@
                 <label class="text-xs font-bold text-slate-500 uppercase mb-3 block">BADGE PRODUK (MAX 3)</label>
                 <div class="grid grid-cols-2 gap-2 text-xs font-bold">
                     <?php 
-                    $badges = ['Pilihan Ibu', 'Lagi Viral', 'Best Seller', 'Harga Promo', 'Premium', 'Stok Terbatas'];
+                    $badges = $config['badge_list'];
                     foreach($badges as $b): ?>
                     <label class="flex items-center gap-2 p-2 border border-slate-200 dark:border-slate-800 rounded-lg cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition">
                         <input type="checkbox" name="badges[]" value="<?= $b ?>" class="badge-check accent-emerald-500 w-4 h-4" onclick="limitChecks()">

@@ -19,7 +19,7 @@
                 <label class="text-xs font-bold text-slate-500 uppercase mb-3 block">BADGE PRODUK (MAX 3)</label>
                 <div class="grid grid-cols-2 gap-2 text-xs font-bold">
                     <?php 
-                    $badges = ['Pilihan Ibu', 'Lagi Viral', 'Best Seller', 'Harga Promo', 'Premium', 'Stok Terbatas'];
+                    $badges = $config['badge_list'];
                     foreach($badges as $b): 
                         $isChecked = in_array($b, $currentBadges) ? 'checked' : '';
                     ?>

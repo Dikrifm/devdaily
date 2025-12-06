@@ -97,4 +97,30 @@ class Panel extends BaseController {
         $db->table('products')->truncate();
         return redirect()->to('/index.php/panel')->with('msg', 'DATABASE RESET.');
     }
+    
+        // ... (Fungsi index, toggle_ai, dll biarkan sama) ...
+
+    // --- FITUR BARU: UPDATE KONFIGURASI WEB ---
+    public function update_settings() {
+        $db = \Config\Database::connect();
+        
+        $updates = [
+            'site_name'    => $this->request->getPost('site_name'),
+            'site_domain'  => $this->request->getPost('site_domain'),
+            'site_tagline' => $this->request->getPost('site_tagline'),
+            'badge_list'   => $this->request->getPost('badge_list') // Disimpan sebagai string koma
+        ];
+
+        foreach($updates as $key => $val) {
+            // Update atau Insert jika belum ada
+            if ($db->table('settings')->where('key', $key)->countAllResults() > 0) {
+                $db->table('settings')->where('key', $key)->update(['value' => $val]);
+            } else {
+                $db->table('settings')->insert(['key' => $key, 'value' => $val]);
+            }
+        }
+
+        return redirect()->to('/index.php/panel')->with('msg', 'Konfigurasi Website Diperbarui!');
+    }
+
 }

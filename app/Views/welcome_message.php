@@ -12,7 +12,6 @@
         .dark .glass { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); }
         .blob { position: absolute; filter: blur(80px); z-index: -1; opacity: 0.6; animation: move 10s infinite alternate; }
         @keyframes move { from { transform: translate(0,0); } to { transform: translate(20px, -20px); } }
-        /* Transisi Sidebar */
         #sidebar { transition: transform 0.3s ease-in-out; }
     </style>
 </head>
@@ -35,70 +34,34 @@
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm transition-opacity"></div>
     <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-slate-50 dark:bg-[#0b1120] border-r border-slate-200 dark:border-slate-800 z-50 transform -translate-x-full shadow-2xl flex flex-col">
         <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-emerald-500/5">
-            <div>
-                <h2 class="text-xl font-black tracking-tighter uppercase">IDA<span class="text-emerald-500">WIDIAWATI</span></h2>
-                <p class="text-[10px] opacity-50 tracking-widest">MENU UTAMA</p>
-            </div>
+            <div><h2 class="text-xl font-black tracking-tighter uppercase">IDA<span class="text-emerald-500">WIDIAWATI</span></h2><p class="text-[10px] opacity-50 tracking-widest">MENU</p></div>
             <button onclick="toggleSidebar()" class="text-slate-500 hover:text-red-500 text-xl">✕</button>
         </div>
-
         <div class="flex-1 overflow-y-auto p-4 space-y-2">
             <div class="glass p-4 rounded-xl mb-6 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-lg">
-                    <?= $isAdmin ? 'A' : 'T' ?>
-                </div>
-                <div>
-                    <p class="text-xs text-slate-500 uppercase font-bold">Status Pengguna</p>
-                    <p class="font-bold"><?= $isAdmin ? 'Administrator' : 'Tamu (Guest)' ?></p>
-                </div>
+                <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-lg"><?= $isAdmin ? 'A' : 'T' ?></div>
+                <div><p class="text-xs text-slate-500 uppercase font-bold">Status</p><p class="font-bold"><?= $isAdmin ? 'Administrator' : 'Tamu' ?></p></div>
             </div>
-
             <p class="text-[10px] font-bold text-slate-500 uppercase pl-2 mb-1">Navigasi</p>
-            <a href="/index.php" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition font-semibold text-sm bg-slate-200/50 dark:bg-slate-800/50">
-                <span>🏠</span> Dashboard
-            </a>
-
+            <a href="/index.php" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition font-semibold text-sm bg-slate-200/50 dark:bg-slate-800/50"><span>🏠</span> Dashboard</a>
             <?php if($isAdmin): ?>
             <p class="text-[10px] font-bold text-slate-500 uppercase pl-2 mt-4 mb-1">Admin Tools</p>
-            <a href="/index.php/admin/create" class="flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-600 transition font-semibold text-sm group">
-                <span class="group-hover:text-white">➕</span> Tambah Produk
-            </a>
-            <a href="/index.php/panel" class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition font-semibold text-sm group">
-                <span class="group-hover:text-white">⚙️</span> Control Panel
-            </a>
+            <a href="/index.php/admin/create" class="flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-600 transition font-semibold text-sm group"><span class="group-hover:text-white">➕</span> Tambah Produk</a>
+            <a href="/index.php/panel" class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition font-semibold text-sm group"><span class="group-hover:text-white">⚙️</span> Control Panel</a>
             <?php else: ?>
-            <a href="/index.php/login" class="flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-500 hover:text-white transition font-semibold text-sm mt-4">
-                <span>🔐</span> Login Admin
-            </a>
+            <a href="/index.php/login" class="flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-500 hover:text-white transition font-semibold text-sm mt-4"><span>🔐</span> Login Admin</a>
             <?php endif; ?>
         </div>
-
         <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-[#050910]">
-            <button onclick="toggleTheme()" class="w-full flex items-center justify-between p-3 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 transition text-xs font-bold uppercase mb-2">
-                <span>Ganti Tema</span>
-                <span id="theme-text">🌙 GELAP</span>
-            </button>
-
-            <?php if($isAdmin): ?>
-            <a href="/index.php/logout" onclick="return confirm('Keluar?')" class="block w-full text-center p-3 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition text-xs font-bold uppercase">
-                LOGOUT
-            </a>
-            <?php endif; ?>
+            <button onclick="toggleTheme()" class="w-full flex items-center justify-between p-3 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 transition text-xs font-bold uppercase mb-2"><span>Tema</span><span id="theme-text">🌙 GELAP</span></button>
+            <?php if($isAdmin): ?><a href="/index.php/logout" onclick="return confirm('Keluar?')" class="block w-full text-center p-3 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition text-xs font-bold uppercase">LOGOUT</a><?php endif; ?>
         </div>
     </aside>
 
     <div class="p-4 max-w-lg mx-auto pb-24">
         <div class="flex justify-between items-center mb-8">
-            <button onclick="toggleSidebar()" class="glass w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform text-2xl">
-                ☰
-            </button>
-
-            <div class="text-right">
-                <h1 class="text-xl font-extrabold tracking-tighter uppercase">
-                    IDA<span class="text-emerald-600 dark:text-emerald-400">WIDIAWATI</span>
-                </h1>
-                <p class="text-[8px] font-bold opacity-60 tracking-[0.2em] uppercase">.shop</p>
-            </div>
+            <button onclick="toggleSidebar()" class="glass w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform text-2xl">☰</button>
+            <div class="text-right"><h1 class="text-xl font-extrabold tracking-tighter uppercase">IDA<span class="text-emerald-600 dark:text-emerald-400">WIDIAWATI</span></h1><p class="text-[8px] font-bold opacity-60 tracking-[0.2em] uppercase">.shop</p></div>
         </div>
 
         <form action="/index.php" method="get" class="mb-6 relative z-10">
@@ -107,7 +70,6 @@
                 <input type="text" name="q" value="<?= esc($keyword ?? '') ?>" placeholder="Cari rekomendasi ibu..." class="relative w-full glass text-slate-900 dark:text-white py-4 pl-5 pr-12 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500/50 font-semibold placeholder-slate-500">
                 <button type="submit" class="absolute right-4 top-4 opacity-50 hover:opacity-100"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
             </div>
-            
             <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
                 <button type="submit" name="sort" value="newest" class="<?= ($sort=='newest') ? 'bg-emerald-600 text-white border-emerald-500' : 'glass text-slate-500 dark:text-slate-400' ?> px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap border transition-colors">Terbaru</button>
                 <button type="submit" name="sort" value="price_high" class="<?= ($sort=='price_high') ? 'bg-emerald-600 text-white border-emerald-500' : 'glass text-slate-500 dark:text-slate-400' ?> px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap border transition-colors">Harga Tertinggi</button>
@@ -134,57 +96,43 @@
                         <div class="aspect-[4/3] w-full bg-slate-200 dark:bg-slate-800 relative">
                             <img src="<?= (strpos($p['image_url'],'http')===0)?$p['image_url']:'/'.$p['image_url'] ?>" alt="<?= $p['name'] ?>" class="w-full h-full object-cover" loading="lazy">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                            
                             <div class="absolute top-2 left-2 flex flex-col gap-1 items-start">
-                                <?php foreach($badges as $b): $style = $colors[$b] ?? 'bg-slate-100 text-slate-500'; ?><span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider backdrop-blur-md border border-white/10 shadow-sm <?= $style ?>"><?= $b ?></span><?php endforeach; ?>
+                                <?php foreach($badges as $b): $style = $colors[$b] ?? 'bg-slate-100 text-slate-500'; ?>
+                                <span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider backdrop-blur-md border border-white/10 shadow-sm <?= $style ?>"><?= $b ?></span>
+                                <?php endforeach; ?>
                             </div>
+
                             <div class="absolute bottom-3 left-3"><span class="bg-black/40 backdrop-blur text-white border border-white/20 text-[10px] font-bold px-2 py-0.5 rounded">Rp <?= number_format($p['market_price']/1000, 0) ?>k</span></div>
                         </div>
                         <div class="p-4"><h3 class="text-sm font-bold leading-tight line-clamp-2 h-10 text-slate-900 dark:text-white"><?= $p['name'] ?></h3></div>
                     </a>
-                    <?php if($isAdmin): ?><a href="/index.php/admin/delete-product/<?= $p['id'] ?>" onclick="return confirm('Hapus?')" class="absolute -top-2 -right-2 w-8 h-8 bg-white dark:bg-slate-800 text-red-500 rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110 z-10">×</a><?php endif; ?>
+                    
+                    <?php if($isAdmin): ?>
+                    <a href="/index.php/admin/edit-product/<?= $p['id'] ?>" class="absolute top-2 right-12 w-8 h-8 bg-white/90 dark:bg-slate-800/90 text-amber-500 rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110 z-20 backdrop-blur">✎</a>
+                    
+                    <a href="/index.php/admin/delete-product/<?= $p['id'] ?>" onclick="return confirm('Hapus?')" class="absolute top-2 right-2 w-8 h-8 bg-white/90 dark:bg-slate-800/90 text-red-500 rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110 z-20 backdrop-blur">✕</a>
+                    <?php endif; ?>
                 </div>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
-
-        <?php if($isAdmin): ?>
-        <a href="/index.php/admin/create" class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-xl shadow-emerald-500/40 flex items-center justify-center text-2xl font-bold hover:scale-110 transition-transform z-30">
-            +
-        </a>
-        <?php endif; ?>
     </div>
 
     <script>
-        // LOGIKA SIDEBAR & TEMA
         const html = document.documentElement;
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
         const themeText = document.getElementById('theme-text');
-
-        function toggleSidebar() {
-            sidebar.classList.toggle('-translate-x-full');
-            if (sidebar.classList.contains('-translate-x-full')) {
-                overlay.classList.add('hidden');
-            } else {
-                overlay.classList.remove('hidden');
-            }
-        }
-
+        function toggleSidebar() { sidebar.classList.toggle('-translate-x-full'); overlay.classList.toggle('hidden'); }
         function applyTheme() {
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                html.classList.add('dark');
-                if(themeText) themeText.innerText = '☀️ TERANG';
+                html.classList.add('dark'); if(themeText) themeText.innerText = '☀️ TERANG';
             } else {
-                html.classList.remove('dark');
-                if(themeText) themeText.innerText = '🌙 GELAP';
+                html.classList.remove('dark'); if(themeText) themeText.innerText = '🌙 GELAP';
             }
         }
-
-        function toggleTheme() {
-            html.classList.contains('dark') ? localStorage.theme = 'light' : localStorage.theme = 'dark';
-            applyTheme();
-        }
+        function toggleTheme() { html.classList.contains('dark') ? localStorage.theme = 'light' : localStorage.theme = 'dark'; applyTheme(); }
         applyTheme();
     </script>
-</body>
-</html>
+</body></html>
