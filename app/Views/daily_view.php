@@ -7,12 +7,12 @@
     <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-slate-50 dark:bg-[#0b1120] border-r border-slate-200 dark:border-slate-800 z-50 transform -translate-x-full shadow-2xl flex flex-col">
         <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-emerald-500/5"><div><h2 class="text-xl font-black tracking-tighter uppercase"><?= esc($config['site_name']) ?></h2><p class="text-[10px] opacity-50 tracking-widest"><?= $L['menu_title'] ?? 'MENU' ?></p></div><button onclick="toggleSidebar()" class="text-slate-500 hover:text-red-500 text-xl">✕</button></div>
         <div class="flex-1 overflow-y-auto p-4 space-y-2">
-            <a href="/index.php" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition font-semibold text-sm bg-slate-200/50 dark:bg-slate-800/50"><span>🏠</span> <?= $L['btn_home'] ?? 'Beranda' ?></a>
+            <a href="/index.php" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition font-semibold text-sm bg-slate-200/50 dark:bg-slate-800/50"><span>🏠</span> <?= $L['btn_home'] ?? 'Home' ?></a>
             <?php if($isAdmin): ?>
             <p class="text-[10px] font-bold text-slate-500 uppercase pl-2 mt-4 mb-1">Admin Tools</p>
             <a href="/index.php/admin/create" class="flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-500 hover:text-white transition font-semibold text-sm group"><span>➕</span> Tambah Produk</a>
             <a href="/index.php/panel" class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-500 hover:text-white transition font-semibold text-sm group"><span>⚙️</span> Control Panel</a>
-            <?php else: ?><a href="/index.php/login" class="flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-500 hover:text-white transition font-semibold text-sm mt-4"><span>🔐</span> Login Admin</a><?php endif; ?>
+            <?php else: ?><a href="/index.php/login" class="flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-500 hover:text-white transition font-semibold text-sm mt-4"><span>🔐</span> <?= $L['btn_login'] ?? 'Login' ?></a><?php endif; ?>
         </div>
         <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-[#050910]">
             <button onclick="toggleTheme()" class="w-full flex items-center justify-between p-3 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 transition text-xs font-bold uppercase mb-2"><span><?= $L['theme_label'] ?? 'TEMA' ?></span><span id="theme-text">🌙 GELAP</span></button>
@@ -36,10 +36,10 @@
             ?>
             <div class="flex flex-wrap gap-2 mb-3"><?php foreach($badges as $b): $style = $colors[$b] ?? 'bg-slate-100 text-slate-500'; ?><span class="px-2 py-1 <?= $style ?> text-[10px] font-bold rounded-md uppercase tracking-wider inline-block"><?= $b ?></span><?php endforeach; ?></div>
             <h1 class="text-2xl font-extrabold leading-tight mb-2 text-slate-900 dark:text-white"><?= $p['name'] ?></h1>
-            <div class="flex items-center gap-2"><span class="text-xs font-semibold text-slate-500 uppercase"><?= $L['market_label'] ?? 'Pasaran' ?>:</span><span class="text-xl font-bold font-mono text-slate-800 dark:text-slate-200">Rp <?= number_format($p['market_price']) ?></span></div>
+            <div class="flex items-center gap-2"><span class="text-xs font-semibold text-slate-500 uppercase"><?= $L['market_label'] ?? 'Pasaran' ?></span><span class="text-xl font-bold font-mono text-slate-800 dark:text-slate-200">Rp <?= number_format($p['market_price']) ?></span></div>
         </div>
 
-        <?php if($isAdmin): ?><a href="/index.php/admin/add-link/<?= $p['id'] ?>" class="flex items-center justify-center w-full py-4 mb-8 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl text-slate-500 hover:border-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-bold text-sm bg-slate-50/50 dark:bg-slate-900/50">+ TAMBAH SUMBER DATA</a><?php endif; ?>
+        <?php if($isAdmin): ?><a href="/index.php/admin/add-link/<?= $p['id'] ?>" class="flex items-center justify-center w-full py-4 mb-8 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl text-slate-500 hover:border-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-bold text-sm bg-slate-50/50 dark:bg-slate-900/50"><?= $L['btn_add_source'] ?? '+ TAMBAH' ?></a><?php endif; ?>
 
         <?php if(!empty($p['description']) && $p['description'] !== 'Belum ada deskripsi produk.'): ?>
         <div class="mb-6 p-4 glass rounded-2xl border border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-900/10">
@@ -49,7 +49,7 @@
         <?php endif; ?>
 
         <div class="space-y-4">
-            <?php if(empty($links)): ?><div class="text-center py-10 opacity-50">Belum ada rekomendasi.</div><?php else: ?>
+            <?php if(empty($links)): ?><div class="text-center py-10 opacity-50"><?= $L['empty_links'] ?? 'Kosong' ?></div><?php else: ?>
                 <?php foreach($links as $l): 
                     $gap=$p['market_price']-$l['price']; $isProfit=$gap>0; $mp=strtolower($l['marketplace']);
                     $icon=null; if(str_contains($mp,'shopee'))$icon='shopee.png';elseif(str_contains($mp,'tokopedia'))$icon='tokopedia.png';elseif(str_contains($mp,'tiktok'))$icon='tiktokshop.png';
@@ -70,19 +70,22 @@
                                 <div class="flex items-center gap-2 mt-1"><span class="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase <?= $badgeColor ?>"><?= $l['seller_badge'] ?></span><p class="text-xs text-slate-500 font-medium truncate w-20"><?= $l['store'] ?></p></div>
                             </div>
                         </div>
-                        <div class="text-right"><div class="text-[10px] font-black tracking-wider <?= $isProfit?'text-emerald-600 dark:text-emerald-400':'text-rose-600 dark:text-rose-400' ?>"><?= $isProfit?'HEMAT':'RUGI' ?></div><div class="text-xs font-bold text-slate-400"><?= $isProfit?'+':'' ?><?= number_format($gap/1000) ?>k</div></div>
+                        <div class="text-right">
+                             <div class="text-[10px] font-black tracking-wider <?= $isProfit?'text-emerald-600 dark:text-emerald-400':'text-rose-600 dark:text-rose-400' ?>"><?= $isProfit ? ($L['status_profit']??'HEMAT') : ($L['status_loss']??'RUGI') ?></div>
+                             <div class="text-xs font-bold text-slate-400"><?= $isProfit?'+':'' ?><?= number_format($gap/1000) ?>k</div>
+                        </div>
                     </div>
                     <div class="flex items-center gap-4 border-t border-slate-200 dark:border-slate-800 pt-3 mt-3 text-xs text-slate-500 font-semibold">
                         <div class="flex items-center gap-1"><span class="text-yellow-500">★</span> <?= $l['rating_score'] ?></div>
-                        <div class="flex items-center gap-1"><span class="text-slate-400">📦</span> <?= $l['sold_count'] ?> Terjual</div>
+                        <div class="flex items-center gap-1"><span class="text-slate-400">📦</span> <?= $l['sold_count'] ?> <?= $L['label_sold'] ?? 'Sold' ?></div>
                     </div>
                     <?php if($aiActive): ?>
                     <div class="bg-slate-100 dark:bg-black/30 rounded-xl p-3 flex gap-3 items-start mt-3">
                         <div class="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 mt-0.5"><svg class="w-3 h-3 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg></div>
-                        <div class="flex-1"><?php if($l['ai_comment']): ?><p class="text-xs text-slate-600 dark:text-slate-300 italic leading-relaxed">"<?= $l['ai_comment'] ?>"</p><?php else: ?><?php if($isAdmin): ?><a href="/index.php/admin/regenerate/<?= $l['id'] ?>" class="text-[10px] font-bold text-emerald-600 hover:underline"><?= $L['btn_ai'] ?? '⚡ Cek Kata Ibu' ?></a><?php endif; ?><?php endif; ?></div>
+                        <div class="flex-1"><?php if($l['ai_comment']): ?><p class="text-xs text-slate-600 dark:text-slate-300 italic leading-relaxed">"<?= $l['ai_comment'] ?>"</p><?php else: ?><?php if($isAdmin): ?><a href="/index.php/admin/regenerate/<?= $l['id'] ?>" class="text-[10px] font-bold text-emerald-600 hover:underline"><?= $L['btn_ai'] ?? 'Cek Kata Ibu' ?></a><?php endif; ?><?php endif; ?></div>
                     </div>
                     <?php endif; ?>
-                    <div class="mt-4 flex gap-2"><a href="<?= $realLink ?>" target="_blank" class="flex-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-2.5 rounded-xl text-xs font-bold text-center uppercase shadow-lg hover:opacity-90 transition-opacity"><?= $L['btn_check'] ?? 'Lihat Barang' ?></a><?php if($isAdmin): ?><a href="/index.php/admin/edit-link/<?= $l['id'] ?>" class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-black transition-colors">✎</a><?php endif; ?></div>
+                    <div class="mt-4 flex gap-2"><a href="<?= $realLink ?>" target="_blank" class="flex-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-2.5 rounded-xl text-xs font-bold text-center uppercase shadow-lg hover:opacity-90 transition-opacity"><?= $L['btn_check'] ?? 'Lihat' ?></a><?php if($isAdmin): ?><a href="/index.php/admin/edit-link/<?= $l['id'] ?>" class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-black transition-colors">✎</a><?php endif; ?></div>
                     <?php if($isAdmin): ?><a href="/index.php/admin/delete-link/<?= $l['id'] ?>" onclick="return confirm('Hapus?')" class="absolute top-2 right-2 p-2 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></a><?php endif; ?>
                 </div>
                 <?php endforeach; ?>
