@@ -24,11 +24,18 @@
                     $gap=$p['market_price']-$l['price']; $isProfit=$gap>0; $mp=strtolower($l['marketplace']);
                     $icon=null; if(str_contains($mp,'shopee'))$icon='shopee.png';elseif(str_contains($mp,'tokopedia'))$icon='tokopedia.png';elseif(str_contains($mp,'tiktok'))$icon='tiktokshop.png';
                     
-                    // Logic Badge Color
-                    $badgeColor = 'bg-slate-200 text-slate-500'; // Default
+                    $badgeColor = 'bg-slate-200 text-slate-500';
                     if($l['seller_badge']=='Official Store') $badgeColor = 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400';
                     if($l['seller_badge']=='Star Seller') $badgeColor = 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400';
                     if($l['seller_badge']=='Power Merchant') $badgeColor = 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400';
+
+                    // --- PERBAIKAN LINK MATI (AUTO HTTPS) ---
+                    $realLink = $l['link'];
+                    // Jika bukan hashtag DAN tidak dimulai dengan http/https, tambahkan https://
+                    if($realLink !== '#' && strpos($realLink, 'http') !== 0) {
+                        $realLink = 'https://' . $realLink;
+                    }
+                    // ----------------------------------------
                 ?>
                 <div class="glass rounded-2xl p-4 relative group hover:bg-white dark:hover:bg-slate-800 transition-colors">
                     <div class="flex justify-between items-start mb-3">
@@ -63,7 +70,7 @@
                     </div>
                     <?php endif; ?>
 
-                    <div class="mt-4 flex gap-2"><a href="<?= $l['link'] ?>" target="_blank" class="flex-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-2.5 rounded-xl text-xs font-bold text-center uppercase shadow-lg hover:opacity-90 transition-opacity">Lihat Barang</a><?php if($isAdmin): ?><a href="/index.php/admin/edit-link/<?= $l['id'] ?>" class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-black transition-colors">✎</a><?php endif; ?></div>
+                    <div class="mt-4 flex gap-2"><a href="<?= $realLink ?>" target="_blank" class="flex-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-2.5 rounded-xl text-xs font-bold text-center uppercase shadow-lg hover:opacity-90 transition-opacity">Lihat Barang</a><?php if($isAdmin): ?><a href="/index.php/admin/edit-link/<?= $l['id'] ?>" class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-black transition-colors">✎</a><?php endif; ?></div>
                     <?php if($isAdmin): ?><a href="/index.php/admin/delete-link/<?= $l['id'] ?>" onclick="return confirm('Hapus?')" class="absolute top-2 right-2 p-2 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></a><?php endif; ?>
                 </div>
                 <?php endforeach; ?>
