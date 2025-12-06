@@ -39,7 +39,7 @@ return view('welcome_message', [
     'products' => $products, 
     'keyword' => $keyword,
     'sort' => $sort
-], ['cache' => 300, 'cache_name' => 'home_page']); 
+]); 
 
     }
 }

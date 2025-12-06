@@ -5,15 +5,19 @@ class Daily extends BaseController {
         
         // Ambil Produk
         $product = $db->table('products')->where('slug', $slug)->get()->getRowArray();
-        if(!$product) return "Produk tidak ditemukan. Coba seed ulang.";
+        if(!$product) return redirect()->to('/index.php');
 
         // Ambil Link & Hitung Gap
         $links = $db->table('links')->where('product_id', $product['id'])->orderBy('price', 'ASC')->get()->getResultArray();
 
-        // Cari baris return view(...) di fungsi index() dan ubah:
+        // CEK STATUS AI UNTUK PENGUNJUNG
+        $aiSetting = $db->table('settings')->where('key', 'ai_mode')->get()->getRowArray();
+        $aiActive = ($aiSetting && $aiSetting['value'] == '1');
+
         return view('daily_view', [
-          'p' => $product, 
-          'links' => $links
-          ], ['cache' => 300, 'cache_name' => 'product_'.$slug]); 
+            'p' => $product, 
+            'links' => $links,
+            'aiActive' => $aiActive
+        ]);
     }
 }

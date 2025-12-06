@@ -2,135 +2,55 @@
 use App\Libraries\GeminiAgent;
 
 class Admin extends BaseController {
+    
+    // --- CREATE & UPLOAD ---
     public function create() { return view('admin_create'); }
     
-    // --- LOGIKA PENYIMPANAN GAMBAR HYBRID ---
-    private function handleImageUpload($fileInputName, $urlInputName, $oldImage = null) {
-        $file = $this->request->getFile($fileInputName);
-        $url = $this->request->getPost($urlInputName);
-        
-        // 1. Cek apakah ada file yang diupload dan valid
-        if ($file && $file->isValid() && !$file->hasMoved()) {
-            // Generate nama acak agar tidak bentrok
-            $newName = $file->getRandomName();
-            // Pindahkan ke folder public/uploads
-            $file->move('uploads', $newName);
-            
-            // Hapus file lama jika ada (untuk hemat storage saat edit)
-            if ($oldImage && strpos($oldImage, 'uploads/') !== false) {
-                if (file_exists($oldImage)) unlink($oldImage); 
-            }
-            
-            return 'uploads/' . $newName; // Simpan path relatif
-        }
-        
-        // 2. Jika tidak ada file upload, cek apakah ada URL link baru
-        if (!empty($url)) {
-            return $url;
-        }
-
-        // 3. Jika tidak ada keduanya, kembalikan gambar lama atau default
-        return $oldImage ?? 'https://placehold.co/600x400/1e293b/FFF?text=NO+IMAGE';
+    private function handleImageUpload($f, $u, $o=null) {
+        $file=$this->request->getFile($f); $url=$this->request->getPost($u);
+        if($file&&$file->isValid()&&!$file->hasMoved()){ $n=$file->getRandomName(); $file->move('uploads',$n); return 'uploads/'.$n; }
+        return !empty($url)?$url:($o??'https://placehold.co/600x400/1e293b/FFF?text=NO+IMAGE');
     }
 
     public function store() {
-    $db = \Config\Database::connect();
-    
-    // 1. VALIDASI KETAT
-    $rules = [
-        'name' => 'required|min_length[3]',
-        'market_price' => 'required|numeric',
-        // Validasi File: Hanya Gambar, Max 2MB, Dimensi max 4000px
-        'image_file' => [
-            'label' => 'File Gambar',
-            'rules' => 'is_image[image_file]|mime_in[image_file,image/jpg,image/jpeg,image/png,image/webp]|max_size[image_file,2048]',
-            'errors' => [
-                'max_size' => 'Ukuran gambar terlalu besar (Max 2MB).',
-                'mime_in' => 'Format file harus JPG, PNG, atau WEBP.',
-                'is_image' => 'File yang diupload bukan gambar.'
-            ]
-        ]
-    ];
-
-    if (!$this->validate($rules)) {
-        // Jika gagal, kembalikan ke form dengan pesan error
-        return redirect()->back()->withInput()->with('error', $this->validator->listErrors());
-    }
-
-    // ... (Sisa kode penyimpanan sama seperti sebelumnya) ...
-    $name = $this->request->getPost('name');
-    $finalImage = $this->handleImageUpload('image_file', 'image_url');
-    $slug = url_title($name, '-', true);
-    
-    $db->table('products')->insert([
-        'name'=>$name, 
-        'slug'=>$slug, 
-        'market_price'=>$this->request->getPost('market_price'), 
-        'image_url'=>$finalImage
-    ]);
-    
-    return redirect()->to('/index.php/admin/add-link/'.$db->insertID())->with('msg', 'Target Terkunci!');
-}
-
-    // --- LOGIKA EDIT HYBRID ---
-public function update_product() {
-    // Validasi sama...
-    $rules = [
-        'name' => 'required|min_length[3]',
-        'market_price' => 'required|numeric',
-        'image_file' => 'is_image[image_file]|mime_in[image_file,image/jpg,image/jpeg,image/png,image/webp]|max_size[image_file,2048]'
-    ];
-    
-    if (!$this->validate($rules)) {
-        return redirect()->back()->withInput()->with('error', 'Gagal: File harus gambar JPG/PNG/WEBP max 2MB.');
-    }
-
-    // ... (Sisa kode update sama) ...
-    $db = \Config\Database::connect();
-    $id = $this->request->getPost('id');
-    $oldData = $db->table('products')->where('id', $id)->get()->getRowArray();
-    $finalImage = $this->handleImageUpload('image_file', 'image_url', $oldData['image_url']);
-    
-    $data = [
-        'name' => $this->request->getPost('name'),
-        'market_price' => $this->request->getPost('market_price'),
-        'image_url' => $finalImage,
-        'slug' => url_title($this->request->getPost('name'), '-', true)
-    ];
-    
-    $db->table('products')->where('id', $id)->update($data);
-    return redirect()->to('/index.php/cek/'.$data['slug'])->with('msg', 'Data Diperbarui.');
-}
-
-    // --- SISA KODE SAMA SEPERTI SEBELUMNYA ---
-    public function add_link($productId) {
         $db = \Config\Database::connect();
-        $product = $db->table('products')->where('id', $productId)->get()->getRowArray();
-        return view('admin_add_link', ['p' => $product]);
+        $name = $this->request->getPost('name');
+        $img = $this->handleImageUpload('image_file', 'image_url');
+        $slug = url_title($name, '-', true);
+        
+        $db->table('products')->insert([
+            'name'=>$name, 
+            'slug'=>$slug, 
+            'market_price'=>$this->request->getPost('market_price'), 
+            'image_url'=>$img
+        ]);
+        return redirect()->to('/index.php/admin/add-link/'.$db->insertID())->with('msg', 'Produk Dibuat.');
     }
+
+    // --- MANAGE LINKS (BAGIAN YG ERROR SEBELUMNYA) ---
+    public function add_link($pid) {
+        $db=\Config\Database::connect();
+        $p=$db->table('products')->where('id',$pid)->get()->getRowArray();
+        return view('admin_add_link',['p'=>$p]);
+    }
+
     public function store_link() {
         $db = \Config\Database::connect();
+        // Pastikan semua field V1.8 tertangkap
         $data = [
             'product_id' => $this->request->getPost('product_id'),
             'marketplace' => $this->request->getPost('marketplace'),
             'store' => $this->request->getPost('store'),
             'price' => $this->request->getPost('price'),
             'link' => $this->request->getPost('link'),
+            'seller_badge' => $this->request->getPost('seller_badge'),
+            'rating_score' => $this->request->getPost('rating_score'),
+            'sold_count' => $this->request->getPost('sold_count'),
         ];
         $db->table('links')->insert($data);
         return $this->generate_ai($db->insertID());
     }
-    public function edit_product($id) {
-        $db = \Config\Database::connect();
-        $p = $db->table('products')->where('id', $id)->get()->getRowArray();
-        return view('admin_edit_product', ['p' => $p]);
-    }
-    public function edit_link($id) {
-        $db = \Config\Database::connect();
-        $link = $db->table('links')->where('id', $id)->get()->getRowArray();
-        $p = $db->table('products')->where('id', $link['product_id'])->get()->getRowArray();
-        return view('admin_edit_link', ['l' => $link, 'p' => $p]);
-    }
+
     public function update_link() {
         $db = \Config\Database::connect();
         $id = $this->request->getPost('id');
@@ -139,37 +59,71 @@ public function update_product() {
             'store' => $this->request->getPost('store'),
             'price' => $this->request->getPost('price'),
             'link' => $this->request->getPost('link'),
-            'ai_comment' => null 
+            'seller_badge' => $this->request->getPost('seller_badge'),
+            'rating_score' => $this->request->getPost('rating_score'),
+            'sold_count' => $this->request->getPost('sold_count'),
+            'ai_comment' => null // Reset AI agar digenerate ulang
         ];
         $db->table('links')->where('id', $id)->update($data);
         return $this->generate_ai($id);
     }
+
+    // --- UPDATE PRODUCT ---
+    public function edit_product($id) {
+        $db=\Config\Database::connect(); $p=$db->table('products')->where('id',$id)->get()->getRowArray();
+        return view('admin_edit_product',['p'=>$p]);
+    }
+
+    public function update_product() {
+        $db=\Config\Database::connect(); $id=$this->request->getPost('id');
+        $old=$db->table('products')->where('id',$id)->get()->getRowArray();
+        $img=$this->handleImageUpload('image_file','image_url',$old['image_url']);
+        
+        $db->table('products')->where('id',$id)->update([
+            'name'=>$this->request->getPost('name'),
+            'market_price'=>$this->request->getPost('market_price'),
+            'image_url'=>$img,
+            'slug'=>url_title($this->request->getPost('name'),'-',true)
+        ]);
+        return redirect()->to('/index.php/cek/'.url_title($this->request->getPost('name'),'-',true))->with('msg','Produk Diupdate.');
+    }
+
+    public function edit_link($id) {
+        $db=\Config\Database::connect(); $l=$db->table('links')->where('id',$id)->get()->getRowArray();
+        $p=$db->table('products')->where('id',$l['product_id'])->get()->getRowArray();
+        return view('admin_edit_link',['l'=>$l,'p'=>$p]);
+    }
+
+    // --- AI & DELETE ---
     public function generate_ai($linkId) {
         $db = \Config\Database::connect();
+        
+        // Cek Saklar AI
+        $setting = $db->table('settings')->where('key', 'ai_mode')->get()->getRowArray();
+        if (!$setting || $setting['value'] == '0') {
+            $l = $db->table('links')->where('id', $linkId)->get()->getRowArray();
+            $p = $db->table('products')->where('id', $l['product_id'])->get()->getRowArray();
+            return redirect()->to('/index.php/cek/'.$p['slug'])->with('msg', 'Disimpan (AI OFF).');
+        }
+
         $data = $db->table('links')->select('links.*, products.name as product_name, products.market_price')->join('products', 'products.id = links.product_id')->where('links.id', $linkId)->get()->getRowArray();
-        if (!$data) return "Data 404";
+        
         $agent = new GeminiAgent();
         $analisis = $agent->analyzeDeal($data['product_name'], $data['market_price'], $data['price'], $data['store']);
         $db->table('links')->where('id', $linkId)->update(['ai_comment' => $analisis]);
+        
         $p = $db->table('products')->where('id', $data['product_id'])->get()->getRowArray();
         return redirect()->to('/index.php/cek/'.$p['slug'])->with('msg', 'Analisa AI Selesai.');
     }
-    public function delete_product($id) {
-        $db = \Config\Database::connect();
-        // Hapus file gambar fisik jika ada
-        $p = $db->table('products')->where('id', $id)->get()->getRowArray();
-        if ($p['image_url'] && strpos($p['image_url'], 'uploads/') !== false) {
-             if (file_exists($p['image_url'])) unlink($p['image_url']);
-        }
-        $db->table('products')->where('id', $id)->delete();
-        return redirect()->to('/index.php')->with('msg', 'Target Dihapus.');
-    }
-    public function delete_link($id) {
-        $db = \Config\Database::connect();
-        $link = $db->table('links')->where('id', $id)->get()->getRowArray();
-        $pid = $link['product_id'];
-        $db->table('links')->where('id', $id)->delete();
-        $p = $db->table('products')->where('id', $pid)->get()->getRowArray();
-        return redirect()->to('/index.php/cek/'.$p['slug'])->with('msg', 'Link Dihapus.');
+
+    public function delete_product($id){ $db=\Config\Database::connect(); $db->table('products')->where('id',$id)->delete(); return redirect()->to('/index.php'); }
+    
+    public function delete_link($id){ 
+        $db=\Config\Database::connect(); 
+        $l=$db->table('links')->where('id',$id)->get()->getRowArray(); 
+        $pid=$l['product_id'];
+        $db->table('links')->where('id',$id)->delete();
+        $p=$db->table('products')->where('id',$pid)->get()->getRowArray();
+        return redirect()->to('/index.php/cek/'.$p['slug']);
     }
 }

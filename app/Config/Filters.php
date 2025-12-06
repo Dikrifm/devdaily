@@ -10,13 +10,13 @@ class Filters extends BaseConfig {
         'csrf'     => CSRF::class,
         'toolbar'  => DebugToolbar::class,
         'honeypot' => Honeypot::class,
-        'auth'     => AuthGuard::class,
+        'auth'     => AuthGuard::class, // PENTING: Alias untuk AuthGuard
     ];
 
     public $globals = [
         'before' => [
-          'honeypot',
-          'csrf', // CSRF dimatikan dulu di global untuk menghindari konflik, kita pakai manual di form
+            // 'honeypot',
+            // 'csrf', // CSRF dimatikan global dulu agar tidak konflik dengan login manual
         ],
         'after' => [
             'toolbar',
@@ -24,7 +24,9 @@ class Filters extends BaseConfig {
     ];
 
     public $methods = [];
+
     public $filters = [
+        // Lindungi halaman Admin dan Panel dari akses tanpa login
         'auth' => ['before' => ['admin/*', 'panel/*', 'panel']]
     ];
 }

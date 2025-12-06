@@ -31,3 +31,4 @@ $routes->get('panel/nuke', 'Panel::nuke_db');
 $routes->get('login', 'Auth::login');
 $routes->post('auth/attempt_login', 'Auth::attempt_login');
 $routes->get('logout', 'Auth::logout');
+$routes->get("panel/toggle-ai", "Panel::toggle_ai");

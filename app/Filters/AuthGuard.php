@@ -5,7 +5,9 @@ use CodeIgniter\Filters\FilterInterface;
 
 class AuthGuard implements FilterInterface {
     public function before(RequestInterface $request, $arguments = null) {
-        if (!session()->get('isLoggedIn')) {
+        $session = \Config\Services::session();
+        // Jika tidak ada session isLoggedIn, tendang ke login
+        if (!$session->get('isLoggedIn')) {
             return redirect()->to('/index.php/login');
         }
     }
