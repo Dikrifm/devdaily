@@ -10,6 +10,10 @@ class Daily extends BaseController {
         // Ambil Link & Hitung Gap
         $links = $db->table('links')->where('product_id', $product['id'])->orderBy('price', 'ASC')->get()->getResultArray();
 
-        return view('daily_view', ['p' => $product, 'links' => $links]);
+        // Cari baris return view(...) di fungsi index() dan ubah:
+        return view('daily_view', [
+          'p' => $product, 
+          'links' => $links
+          ], ['cache' => 300, 'cache_name' => 'product_'.$slug]); 
     }
 }

@@ -32,11 +32,14 @@ class Home extends BaseController {
         }
 
         $products = $builder->get()->getResultArray();
-        
-        return view('welcome_message', [
-            'products' => $products, 
-            'keyword' => $keyword,
-            'sort' => $sort
-        ]);
+
+// Cache halaman selama 300 detik (5 menit). 
+// Server tidak akan tanya database lagi selama 5 menit. Super Cepat.
+return view('welcome_message', [
+    'products' => $products, 
+    'keyword' => $keyword,
+    'sort' => $sort
+], ['cache' => 300, 'cache_name' => 'home_page']); 
+
     }
 }
