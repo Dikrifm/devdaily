@@ -82,7 +82,7 @@
                 <div class="relative group">
                     <a href="/index.php/cek/<?= $p['slug'] ?>" class="block glass rounded-2xl overflow-hidden hover:-translate-y-1 transition-transform duration-300">
                         <div class="aspect-[4/3] w-full bg-slate-200 dark:bg-slate-800 relative">
-                            <img src="<?= $p['image_url'] ?>" alt="<?= $p['name'] ?>" class="w-full h-full object-cover" loading="lazy">
+                            <img src="<?= (strpos($p['image_url'], 'http') === 0) ? $p['image_url'] : '/'.$p['image_url'] ?>"  alt="<?= $p['name'] ?>" class="w-full h-full object-cover" loading="lazy">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                             <div class="absolute bottom-3 left-3">
                                 <span class="bg-white/20 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded">Rp <?= number_format($p['market_price']/1000, 0) ?>k</span>

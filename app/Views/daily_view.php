@@ -18,7 +18,7 @@
     <?php $isAdmin = session()->get('isLoggedIn'); // CEK LOGIN ?>
 
     <div class="relative h-72 w-full overflow-hidden group">
-        <img src="<?= $p['image_url'] ?>" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
+        <img src="<?= (strpos($p['image_url'], 'http') === 0) ? $p['image_url'] : '/'.$p['image_url'] ?>" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
         <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-slate-50 dark:to-[#09090b]"></div>
         
         <a href="/index.php" class="absolute top-6 left-6 w-10 h-10 glass rounded-full flex items-center justify-center text-slate-900 dark:text-white hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-colors z-20">←</a>
