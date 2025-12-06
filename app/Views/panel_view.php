@@ -1,30 +1,73 @@
 <!DOCTYPE html>
-<html lang="id" class="dark"><head><title>COMMAND CENTER</title><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"><script>tailwind.config={darkMode:'class'}</script><style>body{font-family:'JetBrains Mono',monospace;background-color:#000;color:#0f0}.grid-bg{background-image:linear-gradient(#111 1px,transparent 1px),linear-gradient(90deg,#111 1px,transparent 1px);background-size:20px 20px}.cyber-border{border:1px solid #333;position:relative}.cyber-border::after{content:'';position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid #0f0;border-left:2px solid #0f0}.cyber-border::before{content:'';position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid #0f0;border-right:2px solid #0f0}</style></head>
-<body class="min-h-screen p-4 pb-20 grid-bg text-green-500">
-    <div class="flex justify-between items-center mb-8 border-b border-green-900 pb-4">
-        <div><h1 class="text-xl font-bold tracking-widest">COMMAND<span class="text-white">PANEL</span></h1><p class="text-[10px] text-green-700">ROOT ACCESS /// V2.0</p></div>
-        <div class="flex gap-2"><a href="/index.php" class="bg-green-900/20 border border-green-700 px-4 py-2 text-xs font-bold">FRONTEND</a><a href="/index.php/logout" onclick="return confirm('Disconnect?')" class="bg-red-900/20 border border-red-800 px-4 py-2 text-xs font-bold text-red-500">LOGOUT</a></div>
+<html lang="id" class="dark"><head><title>COMMAND CENTER</title><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"><script>tailwind.config={darkMode:'class'}</script><style>body{font-family:'JetBrains Mono',monospace;background-color:#050505;color:#00ff41}.grid-bg{background-image:linear-gradient(#111 1px,transparent 1px),linear-gradient(90deg,#111 1px,transparent 1px);background-size:20px 20px}.cyber-border{border:1px solid #1f2937;position:relative;background:rgba(0,0,0,0.6)}.cyber-border::after{content:'';position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid #00ff41;border-left:2px solid #00ff41}.cyber-border::before{content:'';position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid #00ff41;border-right:2px solid #00ff41}input{background:#000;border:1px solid #333;color:white;padding:8px;font-size:12px;width:100%;outline:none}input:focus{border-color:#00ff41}button:hover{opacity:0.8}</style></head>
+<body class="min-h-screen p-4 pb-20 grid-bg">
+
+    <?php if(session()->getFlashdata('msg')): ?>
+        <div class="mb-4 p-3 border border-green-500 bg-green-900/20 text-green-400 text-xs font-bold">>> <?= session()->getFlashdata('msg') ?></div>
+    <?php endif; ?>
+    <?php if(session()->getFlashdata('error')): ?>
+        <div class="mb-4 p-3 border border-red-500 bg-red-900/20 text-red-400 text-xs font-bold">>> ERROR: <?= session()->getFlashdata('error') ?></div>
+    <?php endif; ?>
+
+    <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
+        <div><h1 class="text-xl font-bold tracking-widest text-white">IDA<span class="text-green-500">WIDIAWATI</span></h1><p class="text-[10px] text-gray-500">SYSTEM CONTROL /// V2.0</p></div>
+        <div class="flex gap-2"><a href="/index.php" class="bg-gray-800 border border-gray-600 px-3 py-2 text-xs font-bold text-white hover:bg-gray-700">EXIT</a><a href="/index.php/logout" onclick="return confirm('Disconnect?')" class="bg-red-900/20 border border-red-800 px-3 py-2 text-xs font-bold text-red-500 hover:bg-red-900">LOGOUT</a></div>
     </div>
 
-    <div class="mb-8">
-        <h3 class="text-xs font-bold bg-blue-900/30 text-blue-400 inline-block px-2 py-1 mb-2">INTELLIGENCE CONTROL</h3>
-        <div class="cyber-border p-4 flex justify-between items-center bg-black/50 border-blue-900/50">
-            <div>
-                <span class="text-sm font-bold text-white">GEMINI AI AGENT</span>
-                <p class="text-[10px] text-slate-500">Status: <?= ($aiMode=='1') ? '<span class="text-emerald-400">ONLINE</span>' : '<span class="text-red-500">OFFLINE (MANUAL MODE)</span>' ?></p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div class="space-y-6">
+            <div class="cyber-border p-4">
+                <h3 class="text-xs font-bold text-gray-500 mb-4 border-b border-gray-800 pb-2">DATA METRICS</h3>
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div><p class="text-[10px] text-gray-500">TARGETS</p><h2 class="text-2xl font-bold text-white"><?= $totalProducts ?></h2></div>
+                    <div><p class="text-[10px] text-gray-500">LINKS</p><h2 class="text-2xl font-bold text-white"><?= $totalLinks ?></h2></div>
+                    <div class="col-span-2 pt-2 border-t border-gray-800"><p class="text-[10px] text-gray-500">POTENTIAL PROFIT</p><h2 class="text-3xl font-bold text-emerald-400">Rp <?= number_format($potentialProfit/1000000, 1) ?>M</h2></div>
+                </div>
             </div>
-            <a href="/index.php/panel/toggle-ai" class="px-6 py-2 border rounded font-bold text-xs transition-all <?= ($aiMode=='1') ? 'bg-emerald-500 text-black border-emerald-500 hover:bg-emerald-400' : 'bg-red-900/20 text-red-500 border-red-500 hover:bg-red-900/50' ?>">
-                <?= ($aiMode=='1') ? 'DISABLE AI' : 'ENABLE AI' ?>
-            </a>
+
+            <div class="cyber-border p-4">
+                <h3 class="text-xs font-bold text-blue-400 mb-2">INTELLIGENCE AGENT</h3>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-gray-400">Gemini 2.5 Flash</span>
+                    <span class="text-xs font-bold <?= ($aiMode=='1')?'text-green-400':'text-red-500' ?>"><?= ($aiMode=='1')?'ONLINE':'OFFLINE' ?></span>
+                </div>
+                <a href="/index.php/panel/toggle-ai" class="block w-full text-center mt-3 py-2 text-xs font-bold border <?= ($aiMode=='1')?'border-green-600 bg-green-900/20 text-green-400':'border-red-600 bg-red-900/20 text-red-400' ?>">
+                    <?= ($aiMode=='1') ? 'DEACTIVATE MODULE' : 'ACTIVATE MODULE' ?>
+                </a>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            
+            <div class="cyber-border p-4 border-yellow-900/30">
+                <h3 class="text-xs font-bold text-yellow-500 mb-3">ADMIN SECURITY</h3>
+                <form action="/index.php/panel/change-password" method="post" class="space-y-2">
+                    <?= csrf_field() ?>
+                    <input type="password" name="old_password" placeholder="Password Lama" required>
+                    <input type="password" name="new_password" placeholder="Password Baru" required>
+                    <button type="submit" class="w-full py-2 bg-yellow-600/20 border border-yellow-600 text-yellow-500 text-xs font-bold hover:bg-yellow-600 hover:text-black transition">UPDATE CREDENTIALS</button>
+                </form>
+            </div>
+
+            <div class="cyber-border p-4 border-purple-900/30">
+                <h3 class="text-xs font-bold text-purple-500 mb-3">SEO OPTIMIZATION</h3>
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] text-gray-500">Sitemap Status</span>
+                    <span class="text-[10px] text-white"><?= $sitemapInfo ?></span>
+                </div>
+                <a href="/index.php/panel/generate-sitemap" class="block w-full text-center py-2 bg-purple-600/20 border border-purple-600 text-purple-400 text-xs font-bold hover:bg-purple-600 hover:text-white transition">GENERATE SITEMAP.XML</a>
+                <p class="text-[9px] text-gray-600 mt-2 text-center">Submit sitemap.xml ke Google Search Console agar terindeks.</p>
+            </div>
+
+            <div class="cyber-border p-4 border-red-900/50 opacity-50 hover:opacity-100 transition-opacity">
+                <h3 class="text-xs font-bold text-red-600 mb-2">DANGER ZONE</h3>
+                <a href="/index.php/panel/nuke" onclick="return confirm('WARNING: ALL DATA WILL BE LOST. CONTINUE?')" class="block w-full text-center py-2 bg-red-950 border border-red-800 text-red-500 text-xs font-bold hover:bg-red-600 hover:text-white">☢ HARD RESET DATABASE</a>
+            </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 mb-8">
-        <div class="cyber-border p-4 bg-black/50"><p class="text-[10px] text-green-700 uppercase">Targets</p><h2 class="text-3xl font-bold text-white"><?= $totalProducts ?></h2></div>
-        <div class="cyber-border p-4 bg-black/50"><p class="text-[10px] text-green-700 uppercase">Links</p><h2 class="text-3xl font-bold text-white"><?= $totalLinks ?></h2></div>
-        <div class="cyber-border p-4 bg-black/50 col-span-2"><p class="text-[10px] text-green-700 uppercase">Est. Profit</p><h2 class="text-4xl font-bold text-emerald-400">Rp <?= number_format($potentialProfit/1000000, 1) ?>M</h2><p class="text-[10px] text-green-800 mt-1"><?= $undervaluedCount ?> Undervalued Items</p></div>
+    <div class="mt-12 text-center border-t border-gray-900 pt-4">
+        <p class="text-[8px] text-gray-600">SERVER: <?= $_SERVER['SERVER_SOFTWARE'] ?? 'Localhost' ?> | PHP <?= phpversion() ?> | DB: <?= $dbSize ?></p>
     </div>
-
-    <div class="mb-8"><h3 class="text-xs font-bold bg-green-900/30 inline-block px-2 py-1 mb-2">SYSTEM HEALTH</h3><div class="cyber-border p-4 space-y-2 text-xs"><div class="flex justify-between border-b border-green-900/50 pb-1"><span class="text-green-700">DB SIZE</span><span class="text-white"><?= $dbSize ?></span></div><div class="flex justify-between border-b border-green-900/50 pb-1"><span class="text-green-700">PHP</span><span class="text-white"><?= $phpVersion ?></span></div></div></div>
-    <div><h3 class="text-xs font-bold bg-red-900/30 text-red-500 inline-block px-2 py-1 mb-2">DANGER ZONE</h3><div class="cyber-border p-4 border-red-900/50"><a href="/index.php/panel/nuke" onclick="return confirm('NUKE DATABASE?')" class="block w-full text-center bg-red-900/20 hover:bg-red-600 hover:text-white border border-red-800 text-red-500 py-3 text-xs font-bold tracking-widest transition">☢ NUKE DATABASE</a></div></div>
 </body></html>

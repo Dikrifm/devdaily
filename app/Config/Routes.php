@@ -32,3 +32,5 @@ $routes->get('login', 'Auth::login');
 $routes->post('auth/attempt_login', 'Auth::attempt_login');
 $routes->get('logout', 'Auth::logout');
 $routes->get("panel/toggle-ai", "Panel::toggle_ai");
+$routes->post("panel/change-password", "Panel::change_password");
+$routes->get("panel/generate-sitemap", "Panel::generate_sitemap");
