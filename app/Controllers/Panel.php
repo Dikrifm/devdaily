@@ -29,6 +29,21 @@ class Panel extends BaseController {
             'dbSize' => $dbSize, 'phpVersion' => phpversion(),
             'aiMode' => $aiMode, 'sitemapInfo' => $sitemapInfo
         ]);
+        $allProducts = $db->table('products')->orderBy('id', 'DESC')->get()->getResultArray();
+
+        return view('panel_view', [
+            'totalProducts' => $totalProducts, 
+            'totalLinks' => $totalLinks,
+            'potentialProfit' => $potentialProfit, 
+            'undervaluedCount' => $undervaluedItems,
+            'dbSize' => $dbSize, 
+            'phpVersion' => phpversion(),
+            'aiMode' => $aiMode, 
+            'sitemapInfo' => $sitemapInfo,
+            
+            // Kirim Data Produk ke View
+            'inventory' => $allProducts 
+        ]);
     }
 
     public function toggle_ai() {

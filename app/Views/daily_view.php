@@ -43,6 +43,12 @@
             <h1 class="text-2xl font-extrabold leading-tight mb-2 text-slate-900 dark:text-white"><?= $p['name'] ?></h1>
             <div class="flex items-center gap-2"><span class="text-xs font-semibold text-slate-500 uppercase">Pasaran:</span><span class="text-xl font-bold font-mono text-slate-800 dark:text-slate-200">Rp <?= number_format($p['market_price']) ?></span></div>
         </div>
+                <?php if(!empty($p['description']) && $p['description'] !== 'Belum ada deskripsi produk.'): ?>
+        <div class="mb-6 p-4 glass rounded-2xl border border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-900/10">
+            <h3 class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1">SPESIFIKASI / CATATAN</h3>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap"><?= esc($p['description']) ?></p>
+        </div>
+        <?php endif; ?>
 
         <?php if($isAdmin): ?><a href="/index.php/admin/add-link/<?= $p['id'] ?>" class="flex items-center justify-center w-full py-4 mb-8 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl text-slate-500 hover:border-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-bold text-sm bg-slate-50/50 dark:bg-slate-900/50">+ TAMBAH SUMBER DATA</a><?php endif; ?>
 

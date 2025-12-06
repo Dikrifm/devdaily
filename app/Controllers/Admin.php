@@ -29,13 +29,14 @@ class Admin extends BaseController {
         $img = $this->handleImageUpload('image_file', 'image_url');
         $slug = url_title($name, '-', true);
         
-        $db->table('products')->insert([
-            'name' => $name, 
-            'slug' => $slug, 
-            'market_price' => $this->request->getPost('market_price'), 
-            'image_url' => $img,
-            'badges' => $badgesJson // SIMPAN JSON
-        ]);
+            $db->table('products')->insert([
+        'name' => $name, 
+        'slug' => $slug, 
+        'market_price' => $this->request->getPost('market_price'), 
+        'image_url' => $img,
+        'badges' => $badgesJson,
+        'description' => $this->request->getPost('description') // BARU
+    ]);
         
         return redirect()->to('/index.php/admin/add-link/'.$db->insertID())->with('msg', 'Produk & Badge Disimpan!');
     }
@@ -56,13 +57,15 @@ class Admin extends BaseController {
         $old = $db->table('products')->where('id', $id)->get()->getRowArray();
         $img = $this->handleImageUpload('image_file', 'image_url', $old['image_url']);
         
-        $db->table('products')->where('id', $id)->update([
-            'name' => $this->request->getPost('name'),
-            'market_price' => $this->request->getPost('market_price'),
-            'image_url' => $img,
-            'badges' => $badgesJson, // UPDATE JSON
-            'slug' => url_title($this->request->getPost('name'), '-', true)
-        ]);
+            $db->table('products')->where('id', $id)->update([
+        'name' => $this->request->getPost('name'),
+        'market_price' => $this->request->getPost('market_price'),
+        'image_url' => $img,
+        'badges' => $badgesJson,
+        'slug' => url_title($this->request->getPost('name'), '-', true),
+        'description' => $this->request->getPost('description') // BARU
+    ]);
+
         
         return redirect()->to('/index.php/cek/'.url_title($this->request->getPost('name'), '-', true))->with('msg', 'Data & Badge Diupdate.');
     }

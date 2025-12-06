@@ -100,4 +100,52 @@
     <div class="mt-12 text-center border-t border-gray-900 pt-4">
         <p class="text-[8px] text-gray-600">SERVER: <?= $_SERVER['SERVER_SOFTWARE'] ?? 'Localhost' ?> | PHP <?= phpversion() ?> | DB: <?= $dbSize ?></p>
     </div>
+        <div class="mt-8 cyber-border p-4 border-emerald-900/30">
+        <h3 class="text-xs font-bold text-emerald-500 mb-4 uppercase tracking-widest">GUDANG DATA UTAMA (INVENTORY)</h3>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-[10px] text-gray-500 border-b border-gray-800">
+                        <th class="p-2">ID</th>
+                        <th class="p-2">PRODUK</th>
+                        <th class="p-2">HARGA PASAR</th>
+                        <th class="p-2">BADGE</th>
+                        <th class="p-2 text-right">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody class="text-xs text-gray-300">
+                    <?php foreach($inventory as $item): 
+                        $bgs = json_decode($item['badges']??'[]', true);
+                        $badgeCount = is_array($bgs) ? count($bgs) : 0;
+                    ?>
+                    <tr class="border-b border-gray-900 hover:bg-white/5 transition">
+                        <td class="p-2 font-mono text-gray-600">#<?= $item['id'] ?></td>
+                        <td class="p-2 font-bold text-white"><?= esc($item['name']) ?></td>
+                        <td class="p-2 font-mono text-emerald-400">Rp <?= number_format($item['market_price']) ?></td>
+                        <td class="p-2">
+                            <span class="bg-gray-800 text-gray-400 px-2 py-0.5 rounded text-[10px]"><?= $badgeCount ?> Badges</span>
+                        </td>
+                        <td class="p-2 text-right">
+                            <a href="/index.php/cek/<?= $item['slug'] ?>" target="_blank" class="text-blue-400 hover:text-white mr-2">LIHAT</a>
+                            <a href="/index.php/admin/edit-product/<?= $item['id'] ?>" class="text-yellow-500 hover:text-white mr-2">EDIT</a>
+                            <a href="/index.php/admin/delete-product/<?= $item['id'] ?>" onclick="return confirm('Hapus permanen?')" class="text-red-500 hover:text-white">HAPUS</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        
+        <?php if(empty($inventory)): ?>
+            <p class="text-center text-xs text-gray-600 py-4">Gudang Kosong.</p>
+        <?php endif; ?>
+        
+        <div class="mt-4 pt-4 border-t border-gray-900 text-center">
+            <a href="/index.php/admin/create" class="inline-block bg-emerald-900/30 border border-emerald-700 text-emerald-500 px-6 py-2 text-xs font-bold hover:bg-emerald-500 hover:text-black transition">
+                + INPUT PRODUK BARU
+            </a>
+        </div>
+    </div>
+
 </body></html>

@@ -7,14 +7,14 @@
 
         <form action="/index.php/admin/store" method="post" enctype="multipart/form-data" class="space-y-4">
             <?= csrf_field() ?>
-            <div><label class="text-xs font-bold text-slate-500 uppercase">Nama Produk</label><input type="text" name="name" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 rounded-xl focus:border-emerald-500 outline-none font-bold" required></div>
+            <div><label class="text-xs font-bold text-slate-500 uppercase">Nama Produk</label><input type="text" name="name" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 rounded-xl focus:border-emerald-500 outline-none font-bold" placeholder="Misal: iPhone 15" required></div>
 
             <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-4">
                 <label class="text-xs font-bold text-slate-500 uppercase mb-3 block">BADGE PRODUK (MAX 3)</label>
                 <div class="grid grid-cols-2 gap-2 text-xs font-bold">
                     <?php 
-                    $badges = $config['badge_list'];
-                    foreach($badges as $b): ?>
+                    $badgesList = $config['badge_list'] ?? ['Pilihan Ibu', 'Lagi Viral', 'Best Seller', 'Harga Promo', 'Premium', 'Stok Terbatas'];
+                    foreach($badgesList as $b): ?>
                     <label class="flex items-center gap-2 p-2 border border-slate-200 dark:border-slate-800 rounded-lg cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition">
                         <input type="checkbox" name="badges[]" value="<?= $b ?>" class="badge-check accent-emerald-500 w-4 h-4" onclick="limitChecks()">
                         <span><?= $b ?></span>
@@ -36,18 +36,18 @@
 
             <div><label class="text-xs font-bold text-slate-500 uppercase">Harga Pasar</label><input type="number" name="market_price" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 rounded-xl focus:border-emerald-500 outline-none font-mono font-bold text-lg" required></div>
             
+            <div>
+                <label class="text-xs font-bold text-slate-500 uppercase">Deskripsi / Spesifikasi Singkat</label>
+                <textarea name="description" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 rounded-xl focus:border-emerald-500 outline-none font-medium h-24 placeholder-slate-500" placeholder="Contoh: Garansi Resmi iBox, Warna Titanium, 256GB..."></textarea>
+                <p class="text-[10px] text-slate-400 mt-1">*Info ini akan muncul di halaman detail produk.</p>
+            </div>
+
             <div class="flex gap-3 mt-6"><a href="/index.php" class="flex-1 py-4 text-center border rounded-xl font-bold text-slate-500">BATAL</a><button type="submit" class="flex-[2] bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg transition">SIMPAN</button></div>
         </form>
     </div>
     <script>
-        function limitChecks() {
-            var checks = document.querySelectorAll('.badge-check');
-            var max = 3;
-            var count = 0;
-            for (var i = 0; i < checks.length; i++) { if (checks[i].checked) count++; }
-            if (count > max) { this.checked = false; alert('Maksimal 3 Badge!'); return false; }
-        }
-        function switchTab(mode) { /* SAMA SEPERTI SEBELUMNYA */
+        function limitChecks(){ var checks=document.querySelectorAll('.badge-check'); var max=3; var count=0; for(var i=0;i<checks.length;i++){if(checks[i].checked)count++;} if(count>max){this.checked=false;alert('Maksimal 3!');return false;} }
+        function switchTab(mode) { 
             document.getElementById('input-upload').className = mode === 'upload' ? 'block' : 'hidden';
             document.getElementById('input-link').className = mode === 'link' ? 'block' : 'hidden';
             if(mode==='upload'){ document.getElementById('btn-upload').classList.add('bg-white','dark:bg-slate-700','shadow','text-emerald-600'); document.getElementById('btn-link').classList.remove('bg-white','dark:bg-slate-700','shadow','text-emerald-600'); }

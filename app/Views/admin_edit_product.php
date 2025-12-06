@@ -40,6 +40,11 @@
             </div>
 
             <div><label class="text-xs font-bold text-slate-500 uppercase">Harga Pasar</label><input type="number" name="market_price" value="<?= esc($p['market_price']) ?>" class="w-full bg-white dark:bg-slate-900 border p-4 rounded-xl focus:border-amber-500 outline-none font-mono font-bold text-lg"></div>
+                        <div>
+                <label class="text-xs font-bold text-slate-500 uppercase">Deskripsi / Spesifikasi Singkat</label>
+                <textarea name="description" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 rounded-xl focus:border-amber-500 outline-none font-medium h-24 placeholder-slate-500" placeholder="Contoh: Garansi Resmi iBox, Warna Titanium, 256GB..."><?= esc($p['description']) ?></textarea>
+                <p class="text-[10px] text-slate-400 mt-1">*Info ini akan muncul di halaman detail produk.</p>
+            </div>
             <div class="flex gap-3 mt-6"><a href="/index.php/cek/<?= $p['slug'] ?>" class="flex-1 py-4 text-center border rounded-xl font-bold text-slate-500">BATAL</a><button type="submit" class="flex-[2] bg-amber-600 text-black font-bold py-4 rounded-xl shadow-lg transition">UPDATE</button></div>
         </form>
     </div>
