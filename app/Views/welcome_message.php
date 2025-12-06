@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
-    <title>DEVDAILY</title>
+    <title>DEVDAILY | Intelligence</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -30,25 +32,43 @@
                 <p class="text-[10px] font-bold opacity-60 tracking-[0.3em] uppercase">Market Intelligence</p>
             </div>
             
-            <a href="/index.php/panel" class="glass w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform text-xl">⚙️</a><button onclick="toggleTheme()" class="mr-2 glass w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform text-xl">
-                <span id="icon-sun" class="hidden">☀️</span>
-                <span id="icon-moon">🌙</span>
-            </button>
+            <div class="flex gap-2">
+                <a href="/index.php/panel" class="glass w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform text-xl">⚙️</a>
+                <button onclick="toggleTheme()" class="glass w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform text-xl">
+                    <span id="icon-sun" class="hidden">☀️</span>
+                    <span id="icon-moon">🌙</span>
+                </button>
+            </div>
         </div>
 
-        <form action="/index.php" method="get" class="mb-8 relative z-10">
-            <div class="relative group">
+        <form action="/index.php" method="get" class="mb-6 relative z-10">
+            <div class="relative group mb-3">
                 <div class="absolute -inset-0.5 bg-gradient-to-r from-emerald-600 to-blue-600 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
                 <input type="text" name="q" value="<?= esc($keyword ?? '') ?>" placeholder="Cari target operasi..." class="relative w-full glass text-slate-900 dark:text-white py-4 pl-5 pr-12 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500/50 placeholder-slate-500 dark:placeholder-slate-400 transition-all font-semibold">
                 <button type="submit" class="absolute right-4 top-4 opacity-50 hover:opacity-100">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </button>
             </div>
+            
+            <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                <button type="submit" name="sort" value="newest" class="<?= ($sort=='newest') ? 'bg-emerald-600 text-white border-emerald-500' : 'glass text-slate-500 dark:text-slate-400' ?> px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap border transition-colors">
+                    Terbaru
+                </button>
+                <button type="submit" name="sort" value="price_high" class="<?= ($sort=='price_high') ? 'bg-emerald-600 text-white border-emerald-500' : 'glass text-slate-500 dark:text-slate-400' ?> px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap border transition-colors">
+                    Harga Tertinggi
+                </button>
+                <button type="submit" name="sort" value="price_low" class="<?= ($sort=='price_low') ? 'bg-emerald-600 text-white border-emerald-500' : 'glass text-slate-500 dark:text-slate-400' ?> px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap border transition-colors">
+                    Harga Terendah
+                </button>
+                <button type="submit" name="sort" value="name_asc" class="<?= ($sort=='name_asc') ? 'bg-emerald-600 text-white border-emerald-500' : 'glass text-slate-500 dark:text-slate-400' ?> px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap border transition-colors">
+                    A-Z
+                </button>
+            </div>
         </form>
 
         <div class="glass rounded-2xl p-6 mb-8 flex justify-between items-center">
             <div>
-                <p class="text-xs font-bold uppercase opacity-60 mb-1">Total Database</p>
+                <p class="text-xs font-bold uppercase opacity-60 mb-1">Database Target</p>
                 <h2 class="text-3xl font-black text-slate-800 dark:text-white"><?= count($products) ?></h2>
             </div>
             <div class="h-10 w-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
@@ -58,7 +78,7 @@
 
         <?php if(empty($products)): ?>
             <div class="text-center py-20 opacity-40">
-                <p class="text-sm font-semibold">Data Kosong</p>
+                <p class="text-sm font-semibold">Data Kosong / Tidak Ditemukan</p>
             </div>
         <?php else: ?>
             <div class="grid grid-cols-2 gap-4">
@@ -73,7 +93,7 @@
                             </div>
                         </div>
                         <div class="p-4">
-                            <h3 class="text-sm font-bold leading-tight line-clamp-2 h-10"><?= $p['name'] ?></h3>
+                            <h3 class="text-sm font-bold leading-tight line-clamp-2 h-10 text-slate-900 dark:text-white"><?= $p['name'] ?></h3>
                         </div>
                     </a>
                     <a href="/index.php/admin/delete-product/<?= $p['id'] ?>" onclick="return confirm('Hapus?')" class="absolute -top-2 -right-2 w-8 h-8 bg-white dark:bg-slate-800 text-red-500 rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110 z-10">
@@ -90,7 +110,6 @@
     </div>
 
     <script>
-        // Logika Mode Gelap/Terang
         const html = document.documentElement;
         const iconSun = document.getElementById('icon-sun');
         const iconMoon = document.getElementById('icon-moon');
