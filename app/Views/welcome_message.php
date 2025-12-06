@@ -84,9 +84,9 @@
             <div class="grid grid-cols-2 gap-4">
                 <?php foreach($products as $p): ?>
                 <div class="relative group">
-                    <a href="/index.php/cek/<?= $p['slug'] ?>" class="block glass rounded-2xl overflow-hidden hover:-translate-y-1 transition-transform duration-300">
+                    <a href="/index.php/cek/<?= $p['slug'] ?>" loading="lazy" decoding="async" class="block glass rounded-2xl overflow-hidden hover:-translate-y-1 transition-transform duration-300">
                         <div class="aspect-[4/3] w-full bg-slate-200 dark:bg-slate-800 relative">
-                            <img src="<?= $p['image_url'] ?>" alt="<?= $p['name'] ?>" class="w-full h-full object-cover">
+                            <img src="<?= $p['image_url'] ?>" alt="<?= $p['name'] ?>" class="w-full h-full object-cover" >
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                             <div class="absolute bottom-3 left-3">
                                 <span class="bg-white/20 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded">Rp <?= number_format($p['market_price']/1000, 0) ?>k</span>
@@ -138,4 +138,26 @@
         applyTheme();
     </script>
 </body>
+<?php if(session()->getFlashdata('msg')): ?>
+<div id="toast" class="fixed top-5 right-5 z-50 transform transition-all duration-500 translate-y-0 opacity-100">
+    <div class="glass border-l-4 border-emerald-500 text-slate-800 dark:text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
+        <div class="bg-emerald-500/20 p-2 rounded-full text-emerald-600 dark:text-emerald-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <div>
+            <h4 class="font-bold text-sm">SYSTEM NOTIFICATION</h4>
+            <p class="text-xs opacity-80"><?= session()->getFlashdata('msg') ?></p>
+        </div>
+        <button onclick="document.getElementById('toast').classList.add('opacity-0','translate-y-[-20px]')" class="ml-4 text-slate-400 hover:text-red-500">×</button>
+    </div>
+</div>
+<script>
+    // Auto hide dalam 4 detik
+    setTimeout(() => {
+        const t = document.getElementById('toast');
+        if(t) { t.classList.add('opacity-0', 'translate-y-[-20px]'); setTimeout(() => t.remove(), 500); }
+    }, 4000);
+</script>
+<?php endif; ?>
+
 </html>

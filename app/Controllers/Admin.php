@@ -15,7 +15,8 @@ class Admin extends BaseController {
         $db->table('products')->insert([
             'name'=>$name, 'slug'=>$slug, 'market_price'=>$this->request->getPost('market_price'), 'image_url'=>$img
         ]);
-        return redirect()->to('/index.php/admin/add-link/'.$db->insertID());
+        
+        return redirect()->to('/index.php/admin/add-link/'.$db->insertID())->with('msg', 'Target Baru Terkunci!');
     }
 
     public function add_link($productId) {
@@ -58,7 +59,7 @@ class Admin extends BaseController {
         ];
         
         $db->table('products')->where('id', $id)->update($data);
-        return redirect()->to('/index.php/cek/'.$data['slug']);
+        return redirect()->to('/index.php/cek/'.$data['slug'])->with('msg', 'Data Target Diperbarui.');
     }
 
     // --- FITUR BARU: EDIT LINK ---
@@ -99,14 +100,14 @@ class Admin extends BaseController {
         $db->table('links')->where('id', $linkId)->update(['ai_comment' => $analisis]);
         
         $p = $db->table('products')->where('id', $data['product_id'])->get()->getRowArray();
-        return redirect()->to('/index.php/cek/'.$p['slug']);
+        return redirect()->to('/index.php/cek/'.$p['slug'])->with('msg', 'Intelijen AI Selesai Menganalisa.');
     }
 
     // --- DELETE ---
     public function delete_product($id) {
         $db = \Config\Database::connect();
         $db->table('products')->where('id', $id)->delete();
-        return redirect()->to('/index.php');
+        return redirect()->to('/index.php')->with('msg', 'Target Dieliminasi.');
     }
     public function delete_link($id) {
         $db = \Config\Database::connect();
