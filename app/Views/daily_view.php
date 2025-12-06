@@ -1,23 +1,11 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
-    <title><?= esc($p['name']) ?> | DevDaily Intel</title>
+    <title><?= esc($p['name']) ?> | DevDaily</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <meta name="description" content="Cek harga wajar <?= esc($p['name']) ?>. Pasar: Rp <?= number_format($p['market_price']) ?>. Temukan deal termurah di sini.">
-    <meta property="og:title" content="Analisa Harga: <?= esc($p['name']) ?>">
-    <meta property="og:description" content="Pasaran: Rp <?= number_format($p['market_price']) ?>. Lihat perbandingan harga toko online di sini.">
-    <meta property="og:image" content="<?= esc($p['image_url']) ?>">
-    <meta property="og:type" content="product">
-    <meta name="twitter:card" content="summary_large_image">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
-
-    <script>
-        tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] } } } }
-    </script>
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] } } } }</script>
     <style>
         .glass { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.5); }
         .dark .glass { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); }
@@ -27,17 +15,17 @@
 </head>
 <body class="font-sans min-h-screen bg-slate-50 dark:bg-[#09090b] text-slate-800 dark:text-slate-200">
     
+    <?php $isAdmin = session()->get('isLoggedIn'); // CEK LOGIN ?>
+
     <div class="relative h-72 w-full overflow-hidden group">
         <img src="<?= $p['image_url'] ?>" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
         <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-slate-50 dark:to-[#09090b]"></div>
         
-        <a href="/index.php" class="absolute top-6 left-6 w-10 h-10 glass rounded-full flex items-center justify-center text-slate-900 dark:text-white hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-colors z-20">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-        </a>
+        <a href="/index.php" class="absolute top-6 left-6 w-10 h-10 glass rounded-full flex items-center justify-center text-slate-900 dark:text-white hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-colors z-20">←</a>
 
-        <a href="/index.php/admin/edit-product/<?= $p['id'] ?>" class="absolute top-6 right-6 w-10 h-10 glass rounded-full flex items-center justify-center text-slate-900 dark:text-white hover:bg-amber-500 hover:text-black hover:border-amber-500 transition-colors z-20">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-        </a>
+        <?php if($isAdmin): ?>
+        <a href="/index.php/admin/edit-product/<?= $p['id'] ?>" class="absolute top-6 right-6 w-10 h-10 glass rounded-full flex items-center justify-center text-slate-900 dark:text-white hover:bg-amber-500 hover:text-black hover:border-amber-500 transition-colors z-20">✎</a>
+        <?php endif; ?>
     </div>
 
     <div class="max-w-md mx-auto px-4 -mt-20 relative z-10 pb-20">
@@ -50,9 +38,11 @@
             </div>
         </div>
 
+        <?php if($isAdmin): ?>
         <a href="/index.php/admin/add-link/<?= $p['id'] ?>" class="flex items-center justify-center w-full py-4 mb-8 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl text-slate-500 hover:border-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-bold text-sm bg-slate-50/50 dark:bg-slate-900/50">
             + TAMBAH SUMBER DATA
         </a>
+        <?php endif; ?>
 
         <div class="space-y-4">
             <?php if(empty($links)): ?>
@@ -95,30 +85,30 @@
                             <?php if($l['ai_comment']): ?>
                                 <p class="text-xs text-slate-600 dark:text-slate-300 italic leading-relaxed">"<?= $l['ai_comment'] ?>"</p>
                             <?php else: ?>
+                                <?php if($isAdmin): ?>
                                 <a href="/index.php/admin/regenerate/<?= $l['id'] ?>" onclick="this.innerHTML='<span class=\'spinner\'></span> Membaca...'; this.classList.add('text-slate-500')" class="text-[10px] font-bold text-emerald-600 hover:underline">⚡ Analisa AI Sekarang</a>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="mt-4 flex gap-2">
                         <a href="<?= $l['link'] ?>" target="_blank" class="flex-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-2.5 rounded-xl text-xs font-bold text-center uppercase shadow-lg hover:opacity-90 transition-opacity">Buka Toko</a>
+                        <?php if($isAdmin): ?>
                         <a href="/index.php/admin/edit-link/<?= $l['id'] ?>" class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-black transition-colors">✎</a>
+                        <?php endif; ?>
                     </div>
 
+                    <?php if($isAdmin): ?>
                     <a href="/index.php/admin/delete-link/<?= $l['id'] ?>" onclick="return confirm('Hapus?')" class="absolute top-2 right-2 p-2 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </a>
+                    <?php endif; ?>
                 </div>
                 <?php endforeach; ?>
             <?php endif; ?>
         </div>
     </div>
-    <script>
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark')
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
-    </script>
+    <script>if(localStorage.theme==='dark'||(!('theme' in localStorage)&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}</script>
 </body>
 </html>

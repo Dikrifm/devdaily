@@ -21,9 +21,14 @@
             <h1 class="text-xl font-bold tracking-widest">COMMAND<span class="text-white">PANEL</span></h1>
             <p class="text-[10px] text-green-700">SYSTEM ROOT ACCESS /// V2.0</p>
         </div>
-        <a href="/index.php" class="bg-green-900/20 hover:bg-green-500 hover:text-black border border-green-700 px-4 py-2 text-xs font-bold transition">
-            EXIT TO FRONTEND
-        </a>
+        <div class="flex gap-2">
+            <a href="/index.php" class="bg-green-900/20 hover:bg-green-500 hover:text-black border border-green-700 px-4 py-2 text-xs font-bold transition">
+                FRONTEND
+            </a>
+            <a href="/index.php/logout" onclick="return confirm('Disconnect Session?')" class="bg-red-900/20 hover:bg-red-600 hover:text-white border border-red-800 px-4 py-2 text-xs font-bold transition text-red-500">
+                LOGOUT
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-2 gap-4 mb-8">
