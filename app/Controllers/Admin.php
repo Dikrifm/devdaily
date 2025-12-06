@@ -34,44 +34,73 @@ class Admin extends BaseController {
     }
 
     public function store() {
-        $db = \Config\Database::connect();
-        $name = $this->request->getPost('name');
-        
-        // Panggil fungsi hybrid tadi
-        $finalImage = $this->handleImageUpload('image_file', 'image_url');
-        
-        $slug = url_title($name, '-', true);
-        
-        $db->table('products')->insert([
-            'name'=>$name, 
-            'slug'=>$slug, 
-            'market_price'=>$this->request->getPost('market_price'), 
-            'image_url'=>$finalImage
-        ]);
-        return redirect()->to('/index.php/admin/add-link/'.$db->insertID())->with('msg', 'Target Terkunci!');
+    $db = \Config\Database::connect();
+    
+    // 1. VALIDASI KETAT
+    $rules = [
+        'name' => 'required|min_length[3]',
+        'market_price' => 'required|numeric',
+        // Validasi File: Hanya Gambar, Max 2MB, Dimensi max 4000px
+        'image_file' => [
+            'label' => 'File Gambar',
+            'rules' => 'is_image[image_file]|mime_in[image_file,image/jpg,image/jpeg,image/png,image/webp]|max_size[image_file,2048]',
+            'errors' => [
+                'max_size' => 'Ukuran gambar terlalu besar (Max 2MB).',
+                'mime_in' => 'Format file harus JPG, PNG, atau WEBP.',
+                'is_image' => 'File yang diupload bukan gambar.'
+            ]
+        ]
+    ];
+
+    if (!$this->validate($rules)) {
+        // Jika gagal, kembalikan ke form dengan pesan error
+        return redirect()->back()->withInput()->with('error', $this->validator->listErrors());
     }
 
+    // ... (Sisa kode penyimpanan sama seperti sebelumnya) ...
+    $name = $this->request->getPost('name');
+    $finalImage = $this->handleImageUpload('image_file', 'image_url');
+    $slug = url_title($name, '-', true);
+    
+    $db->table('products')->insert([
+        'name'=>$name, 
+        'slug'=>$slug, 
+        'market_price'=>$this->request->getPost('market_price'), 
+        'image_url'=>$finalImage
+    ]);
+    
+    return redirect()->to('/index.php/admin/add-link/'.$db->insertID())->with('msg', 'Target Terkunci!');
+}
+
     // --- LOGIKA EDIT HYBRID ---
-    public function update_product() {
-        $db = \Config\Database::connect();
-        $id = $this->request->getPost('id');
-        
-        // Ambil data lama dulu untuk referensi gambar lama
-        $oldData = $db->table('products')->where('id', $id)->get()->getRowArray();
-        
-        // Handle gambar (hapus yang lama jika ada upload baru)
-        $finalImage = $this->handleImageUpload('image_file', 'image_url', $oldData['image_url']);
-        
-        $data = [
-            'name' => $this->request->getPost('name'),
-            'market_price' => $this->request->getPost('market_price'),
-            'image_url' => $finalImage,
-            'slug' => url_title($this->request->getPost('name'), '-', true)
-        ];
-        
-        $db->table('products')->where('id', $id)->update($data);
-        return redirect()->to('/index.php/cek/'.$data['slug'])->with('msg', 'Data Diperbarui.');
+public function update_product() {
+    // Validasi sama...
+    $rules = [
+        'name' => 'required|min_length[3]',
+        'market_price' => 'required|numeric',
+        'image_file' => 'is_image[image_file]|mime_in[image_file,image/jpg,image/jpeg,image/png,image/webp]|max_size[image_file,2048]'
+    ];
+    
+    if (!$this->validate($rules)) {
+        return redirect()->back()->withInput()->with('error', 'Gagal: File harus gambar JPG/PNG/WEBP max 2MB.');
     }
+
+    // ... (Sisa kode update sama) ...
+    $db = \Config\Database::connect();
+    $id = $this->request->getPost('id');
+    $oldData = $db->table('products')->where('id', $id)->get()->getRowArray();
+    $finalImage = $this->handleImageUpload('image_file', 'image_url', $oldData['image_url']);
+    
+    $data = [
+        'name' => $this->request->getPost('name'),
+        'market_price' => $this->request->getPost('market_price'),
+        'image_url' => $finalImage,
+        'slug' => url_title($this->request->getPost('name'), '-', true)
+    ];
+    
+    $db->table('products')->where('id', $id)->update($data);
+    return redirect()->to('/index.php/cek/'.$data['slug'])->with('msg', 'Data Diperbarui.');
+}
 
     // --- SISA KODE SAMA SEPERTI SEBELUMNYA ---
     public function add_link($productId) {
