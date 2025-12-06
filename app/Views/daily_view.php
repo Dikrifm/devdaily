@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
-    <title><?= esc($p['name']) ?> | DevDaily</title>
+    <title><?= esc($p['name']) ?> | Pilihan Ibu Ida</title> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="description" content="Rekomendasi belanja hemat pilihan Ibu Ida. Cek harga wajar <?= esc($p['name']) ?> disini sebelum beli!">
+    <meta property="og:site_name" content="Ida Widiawati Shop"> <meta property="og:title" content="Kata Ibu Ida: Cek Harga <?= esc($p['name']) ?>">
+    <meta property="og:description" content="Pasaran: Rp <?= number_format($p['market_price']) ?>. Jangan sampai kemahalan, cek rekomendasi toko termurah di sini.">
+    <meta property="og:image" content="<?= (strpos($p['image_url'], 'http') === 0) ? $p['image_url'] : base_url($p['image_url']) ?>">
+    <meta property="og:type" content="product">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] } } } }</script>

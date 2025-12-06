@@ -33,9 +33,15 @@
     <div class="p-4 max-w-lg mx-auto pb-24">
         <div class="flex justify-between items-center mb-8">
             <div>
-                <h1 class="text-3xl font-extrabold tracking-tighter">DEV<span class="text-emerald-600 dark:text-emerald-400">DAILY</span></h1>
-                <p class="text-[10px] font-bold opacity-60 tracking-[0.3em] uppercase">Market Intelligence</p>
-            </div>
+    <h1 class="text-3xl font-extrabold tracking-tighter uppercase">
+        IDA<span class="text-emerald-600 dark:text-emerald-400">WIDIAWATI</span>
+        <span class="text-xs font-normal align-top opacity-50">.shop</span>
+    </h1>
+    <p class="text-[10px] font-bold opacity-60 tracking-[0.2em] uppercase mt-1">
+        Kurasi Belanja Cerdas & Hemat
+    </p>
+</div>
+
             
             <div class="flex gap-2">
                 <?php if($isAdmin): ?>

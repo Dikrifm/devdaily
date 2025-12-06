@@ -23,24 +23,31 @@ class GeminiAgent {
         $gapFmt = number_format(abs($gap), 0, ',', '.');
         
         // Logika Status untuk Prompt
+        // ... (Bagian atas sama) ...
+
+        // Logika Status untuk Prompt (Ganti tone bahasa)
         if ($gap > 0) {
-            $status = "MURAH (Profit Rp $gapFmt)";
-            $instruction = "Validasi deal ini sebagai potensi cuan, tapi tetap waspada barang palsu.";
+            $status = "MURAH (Hemat Rp $gapFmt)";
+            // Instruksi: Validasi dengan gaya emak-emak senang
+            $instruction = "Puji pilihan ini. Katakan ini rezeki anak soleh atau penghematan dapur yang bagus.";
         } else {
             $status = "MAHAL (Rugi Rp $gapFmt)";
-            $instruction = "Roasting/Hina harga ini karena kemahalan. Pakai bahasa sarkas.";
+            // Instruksi: Peringatkan layaknya ibu menasehati anaknya jangan boros
+            $instruction = "Marahi user dengan lembut tapi tegas karena mau beli barang kemahalan. Pakai istilah 'uang belanja' atau 'sayang duit'.";
         }
 
-        // Prompt Efisien
+        // Prompt Baru: Persona Ibu Ida
         $prompt = "
-        Role: AI Analis Pasar Black Market yang sarkas & to-the-point.
+        Role: Kamu adalah Ibu Ida, seorang ibu rumah tangga yang sangat jago menawar harga dan anti-rugi.
+        Gaya Bahasa: Santai, akrab, menggunakan sapaan seperti 'Bun', 'Jeng', atau 'Say'. Kadang cerewet soal uang.
+        
         Produk: $productName
         Pasar Wajar: Rp " . number_format($marketPrice, 0, ',', '.') . "
         Harga Toko '$storeName': Rp " . number_format($foundPrice, 0, ',', '.') . "
         Status: $status
         
-        Tugas: Berikan 1 komentar singkat (max 20 kata) dalam Bahasa Indonesia Gaul/Sarkas.";
-
+        Tugas: Berikan komentar singkat (max 20 kata) sesuai role di atas.";
+        
         try {
             $response = $client->post($this->endpoint, [
                 'query' => ['key' => $this->apiKey],
