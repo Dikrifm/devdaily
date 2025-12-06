@@ -1,7 +1,27 @@
 <!DOCTYPE html>
 <html lang="id" class="dark"><head><title><?= esc($p['name']) ?> | IdaWidiawati</title><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet"><script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Plus Jakarta Sans','sans-serif']}}}}</script><style>.glass{background:rgba(255,255,255,0.6);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.5)}.dark .glass{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.05)}.spinner{border:2px solid rgba(255,255,255,0.1);border-left-color:#10b981;border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:5px}@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style></head>
 <body class="font-sans min-h-screen bg-slate-50 dark:bg-[#09090b] text-slate-800 dark:text-slate-200">
-    <?php $isAdmin=session()->get('isLoggedIn'); ?>
+    <?php 
+    $isAdmin=session()->get('isLoggedIn'); 
+    
+    // --- LOGIKA SMART BADGES ---
+    // --- AMBIL BADGE DARI DATABASE ---
+    // Decode JSON yang disimpan Admin
+    $manualBadges = json_decode($p['badges'] ?? '["Pilihan Ibu"]', true);
+    if (!is_array($manualBadges)) $manualBadges = ['Pilihan Ibu']; // Fallback
+
+    // Mapping Warna Badge
+    $colors = [
+        'Pilihan Ibu' => 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400',
+        'Lagi Viral' => 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400',
+        'Best Seller' => 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400',
+        'Harga Promo' => 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400',
+        'Premium' => 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400',
+        'Stok Terbatas' => 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400',
+    ];
+
+    ?>
+
     <div class="relative h-72 w-full overflow-hidden group">
         <img src="<?= (strpos($p['image_url'],'http')===0)?$p['image_url']:'/'.$p['image_url'] ?>" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
         <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-slate-50 dark:to-[#09090b]"></div>
@@ -11,7 +31,17 @@
 
     <div class="max-w-md mx-auto px-4 -mt-20 relative z-10 pb-20">
         <div class="glass rounded-3xl p-6 shadow-xl mb-6 bg-white/80 dark:bg-black/60 backdrop-blur-xl">
-            <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold rounded-full uppercase tracking-wider mb-2 inline-block">Pilihan Ibu</span>
+            <div class="flex flex-wrap gap-2 mb-2">
+    <?php foreach($manualBadges as $mb): 
+        $style = $colors[$mb] ?? 'bg-slate-100 text-slate-500';
+    ?>
+    <span class="px-2 py-1 <?= $style ?> text-[10px] font-bold rounded-md uppercase tracking-wider inline-block">
+        <?= $mb ?>
+    </span>
+    <?php endforeach; ?>
+</div>
+
+            
             <h1 class="text-2xl font-extrabold leading-tight mb-2 text-slate-900 dark:text-white"><?= $p['name'] ?></h1>
             <div class="flex items-center gap-2"><span class="text-xs font-semibold text-slate-500 uppercase">Pasaran:</span><span class="text-xl font-bold font-mono text-slate-800 dark:text-slate-200">Rp <?= number_format($p['market_price']) ?></span></div>
         </div>
@@ -29,13 +59,8 @@
                     if($l['seller_badge']=='Star Seller') $badgeColor = 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400';
                     if($l['seller_badge']=='Power Merchant') $badgeColor = 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400';
 
-                    // --- PERBAIKAN LINK MATI (AUTO HTTPS) ---
                     $realLink = $l['link'];
-                    // Jika bukan hashtag DAN tidak dimulai dengan http/https, tambahkan https://
-                    if($realLink !== '#' && strpos($realLink, 'http') !== 0) {
-                        $realLink = 'https://' . $realLink;
-                    }
-                    // ----------------------------------------
+                    if($realLink !== '#' && strpos($realLink, 'http') !== 0) $realLink = 'https://' . $realLink;
                 ?>
                 <div class="glass rounded-2xl p-4 relative group hover:bg-white dark:hover:bg-slate-800 transition-colors">
                     <div class="flex justify-between items-start mb-3">
