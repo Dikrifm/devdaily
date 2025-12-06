@@ -37,31 +37,104 @@
     <?php endif; ?>
 
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[60] hidden backdrop-blur-sm transition-opacity"></div>
-    <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-slate-50 dark:bg-[#0b1120] border-r border-slate-200 dark:border-slate-800 z-[70] transform -translate-x-full shadow-2xl flex flex-col">
-        <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-emerald-500/5">
-            <div><h2 class="text-xl font-black tracking-tighter uppercase">IDA<span class="text-emerald-500">WIDIAWATI</span></h2><p class="text-[10px] opacity-50 tracking-widest">MENU</p></div>
-            <button onclick="toggleSidebar()" class="text-slate-500 hover:text-red-500 text-xl">✕</button>
-        </div>
-        <div class="flex-1 overflow-y-auto p-4 space-y-2">
-            <div class="glass p-4 rounded-xl mb-6 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-lg"><?= $isAdmin ? 'A' : 'T' ?></div>
-                <div><p class="text-xs text-slate-500 uppercase font-bold">Status</p><p class="font-bold"><?= $isAdmin ? 'Administrator' : 'Tamu' ?></p></div>
+        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[60] hidden backdrop-blur-sm transition-opacity duration-300"></div>
+    
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-[85vw] max-w-xs bg-white/90 dark:bg-[#0b1120]/95 backdrop-blur-2xl border-r border-slate-200 dark:border-slate-800 z-[70] transform -translate-x-full shadow-2xl flex flex-col transition-transform duration-300 ease-out">
+        
+        <div class="p-6 bg-gradient-to-b from-emerald-50/50 to-transparent dark:from-emerald-900/10 dark:to-transparent">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h2 class="text-2xl font-black tracking-tighter uppercase text-slate-800 dark:text-white">
+                        IDA<span class="text-emerald-500">WIDIAWATI</span>
+                    </h2>
+                    <p class="text-[9px] font-bold opacity-50 tracking-[0.3em] uppercase">OFFICIAL STORE</p>
+                </div>
+                <button onclick="toggleSidebar()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-red-500 flex items-center justify-center transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
-            <p class="text-[10px] font-bold text-slate-500 uppercase pl-2 mb-1">Navigasi</p>
-            <a href="/index.php" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition font-semibold text-sm bg-slate-200/50 dark:bg-slate-800/50"><span>🏠</span> Dashboard</a>
-            <?php if($isAdmin): ?>
-            <p class="text-[10px] font-bold text-slate-500 uppercase pl-2 mt-4 mb-1">Admin Tools</p>
-            <a href="/index.php/admin/create" class="flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-600 transition font-semibold text-sm group"><span class="group-hover:text-white">➕</span> Tambah Produk</a>
-            <a href="/index.php/panel" class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition font-semibold text-sm group"><span class="group-hover:text-white">⚙️</span> Control Panel</a>
-            <?php else: ?>
-            <a href="/index.php/login" class="flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-500 hover:text-white transition font-semibold text-sm mt-4"><span>🔐</span> Login Admin</a>
-            <?php endif; ?>
+
+            <div class="glass p-4 rounded-2xl flex items-center gap-4 border border-white/20 shadow-sm">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                    <?= $isAdmin ? 'A' : 'T' ?>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider mb-0.5">Status Pengguna</p>
+                    <h3 class="font-bold text-slate-800 dark:text-white text-sm">
+                        <?= $isAdmin ? 'Administrator' : 'Pengunjung Tamu' ?>
+                    </h3>
+                </div>
+            </div>
         </div>
-        <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-[#050910]">
-            <button onclick="toggleTheme()" class="w-full flex items-center justify-between p-3 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 transition text-xs font-bold uppercase mb-2"><span>Tema</span><span id="theme-text">🌙 GELAP</span></button>
-            <?php if($isAdmin): ?><a href="/index.php/logout" onclick="return confirm('Keluar?')" class="block w-full text-center p-3 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition text-xs font-bold uppercase">LOGOUT</a><?php endif; ?>
+
+        <div class="flex-1 overflow-y-auto px-4 py-2 space-y-6">
+            
+            <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-3 mb-2">Menu Utama</p>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="/index.php" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/50 text-emerald-600 dark:text-emerald-400 font-bold text-sm border border-transparent hover:border-emerald-500/30 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                            Beranda Toko
+                        </a>
+                    </li>
+                    <?php if(!$isAdmin): ?>
+                    <li>
+                        <a href="/index.php/login" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm transition-all">
+                            <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                            Login Admin
+                        </a>
+                    </li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+
+            <?php if($isAdmin): ?>
+            <div>
+                <p class="text-[10px] font-black text-amber-500 uppercase tracking-widest px-3 mb-2 flex items-center gap-2">
+                    Admin Zone <span class="w-full h-[1px] bg-amber-500/20"></span>
+                </p>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="/index.php/admin/create" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-900/10 hover:text-amber-600 font-medium text-sm transition-all group">
+                            <span class="w-5 h-5 flex items-center justify-center bg-slate-200 dark:bg-slate-700 rounded-md text-xs group-hover:bg-amber-500 group-hover:text-white transition-colors">＋</span>
+                            Input Produk Baru
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/index.php/panel" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/10 hover:text-blue-500 font-medium text-sm transition-all group">
+                            <span class="w-5 h-5 flex items-center justify-center bg-slate-200 dark:bg-slate-700 rounded-md text-xs group-hover:bg-blue-500 group-hover:text-white transition-colors">⚙</span>
+                            Control Panel
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <?php endif; ?>
+
+        </div>
+
+        <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#080c14]">
+            <button onclick="toggleTheme()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:border-emerald-500 transition-all group mb-3">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">🎨</span>
+                    <span class="text-xs font-bold text-slate-600 dark:text-slate-300">TEMA TAMPILAN</span>
+                </div>
+                <span id="theme-text" class="text-[10px] font-black px-2 py-1 rounded bg-slate-100 dark:bg-slate-900 text-slate-500 group-hover:text-emerald-500">AUTO</span>
+            </button>
+
+            <?php if($isAdmin): ?>
+            <a href="/index.php/logout" onclick="return confirm('Akhiri sesi admin?')" class="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-bold text-xs hover:bg-red-500 hover:text-white transition-all border border-red-200 dark:border-red-900/30">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                KELUAR SISTEM
+            </a>
+            <?php endif; ?>
+            
+            <p class="text-[8px] text-center text-slate-400 mt-4 tracking-widest">
+                VERSI 2.2 • POWERED BY IDA WIDIAWATI
+            </p>
         </div>
     </aside>
+
 
     <nav id="sticky-header" class="fixed top-0 left-0 w-full z-40 p-4 transition-all duration-300">
         <div class="max-w-lg mx-auto flex justify-between items-center">
