@@ -40,7 +40,7 @@
     <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-slate-50 dark:bg-[#0b1120] border-r border-slate-200 dark:border-slate-800 z-[70] transform -translate-x-full shadow-2xl flex flex-col">
         <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-emerald-500/5">
             <div>
-                00099776gyhggffttttt
+                CEK WEBHOOK
                 <h2 class="text-xl font-black tracking-tighter uppercase"><?= esc($config['site_name']) ?></h2>
                 <p class="text-[10px] opacity-50 tracking-widest"><?= $L['menu_title'] ?? 'MENU UTAMA' ?></p>
             </div>
