@@ -11,6 +11,18 @@ Options -Indexes
 	Options +FollowSymlinks
 	RewriteEngine On
 
+        # 1. Paksa HTTPS (Gembok Hijau)
+    # Jika koneksi BUKAN https (!=on), lempar ke https
+    RewriteCond %{HTTPS} !=on
+    RewriteRule ^.*$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # 2. Hapus "index.php" dari URL (Kosmetik SEO)
+    # Jika file/folder aslinya tidak ada (!-f, !-d),
+    # Baru lempar ke index.php CI4
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^([\s\S]*)$ index.php/$1 [L,NC,QSA]
+
 	# If you installed CodeIgniter in a subfolder, you will need to
 	# change the following line to match the subfolder you need.
 	# http://httpd.apache.org/docs/current/mod/mod_rewrite.html#rewritebase
