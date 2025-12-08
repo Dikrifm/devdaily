@@ -4,31 +4,58 @@ use App\Libraries\GeminiAgent;
 
 class Admin extends BaseController {
     
-    // --- HELPER: IMAGE HANDLER (SECURE VERSION) ---
+        // --- HELPER: IMAGE HANDLER (WEBP CONVERTER + RESIZER) ---
     private function handleImageUpload($fileKey, $urlKey, $oldImage = null) {
         $file = $this->request->getFile($fileKey);
         $url  = $this->request->getPost($urlKey);
 
         // 1. Prioritas: File Upload Fisik
         if ($file && $file->isValid() && !$file->hasMoved()) {
-            // Hapus gambar lama jika ada (Garbage Collection)
-            if ($oldImage && strpos($oldImage, 'uploads/') !== false && file_exists($oldImage)) {
-                unlink($oldImage);
+            
+            // A. Garbage Collection (Hapus file lama)
+            if ($oldImage && strpos($oldImage, 'uploads/') !== false && file_exists(FCPATH . $oldImage)) {
+                unlink(FCPATH . $oldImage);
             }
-            // Generate nama acak agar tidak bisa ditebak hacker
-            $newName = $file->getRandomName();
-            $file->move('uploads', $newName);
-            return 'uploads/' . $newName;
+
+            // B. Siapkan Nama Baru (WebP)
+            $randomName = $file->getRandomName(); // ex: 12345.jpg
+            $nameWithoutExt = pathinfo($randomName, PATHINFO_FILENAME);
+            $webpName = $nameWithoutExt . '.webp';
+            $targetPath = FCPATH . 'uploads/' . $webpName;
+
+            // C. Eksekusi Manipulasi (SMART HIGH FIDELITY)
+            try {
+                $imageService = \Config\Services::image()->withFile($file);
+                // 1. Cek Dimensi Asli
+                $origWidth = $imageService->getWidth();
+                // 2. LOGIKA ADAPTIF:
+                // Hanya resize jika gambar RAKSASA (di atas Full HD / 1920px).
+                // Jika gambar sudah pas (misal 1500px), biarkan resolusi aslinya agar pixel sempurna.
+                if ($origWidth > 1920) {
+                    $imageService->resize(1920, 1920, true, 'width');
+                }
+                // 3. Simpan sebagai WebP Kualitas Tinggi (95)
+                // Angka 95 adalah "Sweet Spot". Mata manusia hampir mustahil bedakan dengan 100,
+                // tapi ukuran file turun signifikan karena metadata dibuang.
+                $imageService->save($targetPath, 95);
+                return 'uploads/' . $webpName;
+            } catch (\Exception $e) {
+                // Fallback: Jika gagal, simpan file asli tanpa kompresi
+                $file->move('uploads', $randomName);
+                return 'uploads/' . $randomName;
+            }
+
         }
 
         // 2. Fallback: URL Eksternal (Link)
         if (!empty($url)) {
-            return esc($url); // Sanitasi URL
+            return esc($url);
         }
 
-        // 3. Last Resort: Gunakan gambar lama atau Placeholder
+        // 3. Last Resort
         return $oldImage ?? 'https://placehold.co/600x400/1e293b/FFF?text=NO+IMAGE';
     }
+
 
     public function create() { 
         return view('admin_create'); 
