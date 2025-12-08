@@ -11,7 +11,7 @@
     <script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Plus Jakarta Sans','sans-serif']}}}}</script>
 
     <?= $this->renderSection('meta_tags') ?>
-
+    <script src="<?= base_url('js/htmx.min.js') ?>"></script>
     <style>
         .glass { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); }
         .dark .glass { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); }
@@ -19,10 +19,31 @@
         #sticky-header { transition: all 0.3s ease; }
         #sticky-header.scrolled { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.05); padding-top: 1rem; padding-bottom: 1rem; }
         .dark #sticky-header.scrolled { background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid rgba(255,255,255,0.05); }
+    
+         /* Loading Bar di Atas Layar */
+        .htmx-indicator-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: #10b981; /* Emerald 500 */
+            z-index: 9999;
+            width: 100%;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.2s ease-out;
+            will-change: transform;
+        }
+        /* Saat HTMX Request Berjalan, Bar Memanjang */
+        .htmx-request .htmx-indicator-bar {
+            transform: scaleX(0.7); /* Maju sampai 70% */
+            transition: transform 3s ease-out; /* Pelan-pelan */
+        }
+        /* Saat Selesai, dia akan full 100% lalu hilang (handled by htmx class removal) */
     </style>
 </head>
-<body class="font-sans min-h-screen transition-colors duration-500 bg-slate-50 text-slate-800 dark:bg-[#0f172a] dark:text-slate-200 relative overflow-x-hidden selection:bg-emerald-500 selection:text-white">
-
+<body hx-boost="true" hx-indicator="#loading-bar" class="font-sans min-h-screen transition-colors duration-500 bg-slate-50 text-slate-800 dark:bg-[#0f172a] dark:text-slate-200 relative overflow-x-hidden selection:bg-emerald-500 selection:text-white">
+    <div id="loading-bar" class="htmx-indicator-bar"></div>
     <?php 
         $isAdmin = session()->get('isLoggedIn'); 
         // CEK SINYAL UNTUK SEMBUNYIKAN HEADER
@@ -75,13 +96,56 @@
         <?= $this->renderSection('content') ?>
     </main>
 
-    <script>
-        const html = document.documentElement; const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('sidebar-overlay'); const header = document.getElementById('sticky-header'); const themeText = document.getElementById('theme-text');
-        window.addEventListener('scroll', () => { if (header && window.scrollY > 10) { header.classList.add('scrolled'); } else if(header) { header.classList.remove('scrolled'); } });
-        function toggleSidebar() { sidebar.classList.toggle('-translate-x-full'); overlay.classList.toggle('hidden'); }
-        function applyTheme() { if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { html.classList.add('dark'); if(themeText) themeText.innerText = '☀️ TERANG'; } else { html.classList.remove('dark'); if(themeText) themeText.innerText = '🌙 GELAP'; } }
-        function toggleTheme() { html.classList.contains('dark') ? localStorage.theme = 'light' : localStorage.theme = 'dark'; applyTheme(); }
-        applyTheme();
+        <script>
+        // Fungsi Inisialisasi UI (Sidebar, Theme, Header)
+        function initUI() {
+            const html = document.documentElement; 
+            const sidebar = document.getElementById('sidebar'); 
+            const overlay = document.getElementById('sidebar-overlay'); 
+            const header = document.getElementById('sticky-header'); 
+            const themeText = document.getElementById('theme-text');
+            
+            // Logic Scroll Header
+            window.onscroll = () => { 
+                if (header && !header.classList.contains('hidden') && window.scrollY > 10) { 
+                    header.classList.add('scrolled'); 
+                } else if(header) { 
+                    header.classList.remove('scrolled'); 
+                } 
+            };
+
+            // Logic Theme Check
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { 
+                html.classList.add('dark'); 
+                if(themeText) themeText.innerText = '☀️ TERANG'; 
+            } else { 
+                html.classList.remove('dark'); 
+                if(themeText) themeText.innerText = '🌙 GELAP'; 
+            }
+        }
+
+        // Jalankan saat pertama kali load
+        initUI();
+
+        // Jalankan ULANG setiap kali HTMX selesai pindah halaman (htmx:afterSwap)
+        document.addEventListener('htmx:afterSwap', function(evt) {
+            initUI();
+            window.scrollTo(0, 0); // Scroll ke atas otomatis
+        });
+
+        // Global Functions (Bisa dipanggil dari onclick)
+        function toggleSidebar() { 
+            document.getElementById('sidebar').classList.toggle('-translate-x-full'); 
+            document.getElementById('sidebar-overlay').classList.toggle('hidden'); 
+        }
+        
+        function toggleTheme() { 
+            const html = document.documentElement;
+            html.classList.contains('dark') ? localStorage.theme = 'light' : localStorage.theme = 'dark'; 
+            // Panggil initUI lagi untuk update teks
+            initUI(); 
+        }
     </script>
+
 </body>
 </html>

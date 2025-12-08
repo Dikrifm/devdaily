@@ -31,26 +31,12 @@
     <?php if(empty($products)): ?>
         <div class="text-center py-20 opacity-40 text-sm font-semibold">Data Kosong</div>
     <?php else: ?>
-        <div class="grid grid-cols-1 gap-6">
-            <?php foreach($products as $p): 
-                // ... (Logika render produk sama persis seperti sebelumnya) ...
-                // COPY PASTE LOGIKA LOOP PRODUK DARI FILE LAMA KE SINI
-                // Pastikan variabel $isAdmin diambil dari session di controller atau global, 
-                // tapi di layout utama kita sudah set $isAdmin, jadi aman.
-            ?> 
-            <div class="relative group bg-white dark:bg-[#1e293b] rounded-xl overflow-hidden shadow-lg border border-slate-100 dark:border-slate-800 hover:shadow-2xl hover:border-emerald-500/30 transition-all duration-500 hover:-translate-y-1">
-                  <a href="/<?= $p['slug'] ?>" class="block">
-                      <div class="aspect-[4/3] w-full bg-slate-200 dark:bg-slate-800 relative overflow-hidden group-hover:shadow-lg transition-all">
-                           <img src="<?= (strpos($p['image_url'],'http')===0)?$p['image_url']:'/'.$p['image_url'] ?>" alt="<?= esc($p['name']) ?>" class="w-full h-full object-cover" loading="lazy">
-                      </div>
-                      <div class="p-5">
-                          <h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight mb-3 line-clamp-2"><?= $p['name'] ?></h3>
-                          <p class="text-xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">Rp <?= number_format($p['market_price']) ?></p>
-                      </div>
-                  </a>
-             </div>
+          <div class="grid grid-cols-1 gap-6">
+            <?php foreach($products as $p): ?> 
+               <?= view_cell('App\Cells\ProductCard::render', ['product' => $p]) ?>
             <?php endforeach; ?>
-        </div>
+          </div>
+
     <?php endif; ?>
 </div>
 <?= $this->endSection() ?>

@@ -1,133 +1,114 @@
 <?= $this->extend('layout/main') ?>
 
-<?= $this->section('title') ?><?= esc($p['name']) ?><?= $this->endSection() ?>
+<?= $this->section('title') ?><?= esc($p->name) ?><?= $this->endSection() ?>
 
 <?= $this->section('hide_header') ?>true<?= $this->endSection() ?>
+<?= $this->section('main_padding') ?>pt-0<?= $this->endSection() ?>
 
 <?= $this->section('meta_tags') ?>
-    <?php $imgSrc = (strpos($p['image_url'], 'http') === 0) ? $p['image_url'] : base_url($p['image_url']); ?>
+    <?php $imgSrc = (strpos($p->image_url, 'http') === 0) ? $p->image_url : base_url($p->image_url); ?>
     <meta property="og:image" content="<?= $imgSrc ?>">
-    <meta name="description" content="Cek harga termurah untuk <?= esc($p['name']) ?>.">
-    <meta property="og:title" content="<?= esc($p['name']) ?>">
-    <meta property="og:description" content="Harga Pasaran: Rp <?= number_format($p['market_price']) ?>">
+    <meta name="description" content="Cek harga termurah untuk <?= esc($p->name) ?>.">
+    <meta property="og:title" content="<?= esc($p->name) ?>">
     <meta name="twitter:card" content="summary_large_image">
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
 
-    <div class="relative h-72 w-full overflow-hidden bg-slate-200 dark:bg-slate-800 group" style="z-index: 0;">
-        <div class="absolute inset-0 bg-slate-300 dark:bg-slate-700 animate-pulse z-0" id="skel-hero"></div>
-        <img src="<?= $imgSrc ?>" 
-             alt="<?= esc($p['name']) ?>"
-             class="w-full h-full object-cover transition-opacity duration-700 opacity-0 relative z-10"
-             onload="document.getElementById('skel-hero').remove(); this.classList.remove('opacity-0');"
-        >
-        <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-slate-50 dark:to-[#0f172a] z-20 pointer-events-none"></div>
-        
-        <a href="/" class="absolute top-6 left-6 w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:bg-emerald-500 transition shadow-lg" style="z-index: 50;">
-            ←
-        </a>
-        <button onclick="toggleSidebar()" class="absolute top-6 right-6 w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:bg-emerald-500 transition text-xl shadow-lg" style="z-index: 50;">
-            ☰
-        </button>
+    <div class="relative w-full bg-slate-50 dark:bg-[#0b1120] min-h-screen">
 
-        <?php if(session()->get('isLoggedIn')): ?>
-           <a href="/admin/edit-product/<?= $p['id'] ?>" class="absolute bottom-6 right-6 w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:bg-amber-500 hover:text-black transition" style="z-index: 50;">✎</a>
-        <?php endif; ?>
-    </div>
-
-    <div class="max-w-md mx-auto px-4 -mt-20 relative pb-20" style="z-index: 30;">
-        
-        <div class="glass rounded-3xl p-6 shadow-xl mb-6 bg-white/80 dark:bg-black/60 backdrop-blur-xl border border-white/20">
-             <?php 
-                $badges = json_decode($p['badges'] ?? '["Pilihan Ibu"]', true); 
-                if(!is_array($badges)) $badges = ['Pilihan Ibu'];
-                $colors = ['Pilihan Ibu'=>'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400','Lagi Viral'=>'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400','Best Seller'=>'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400','Harga Promo'=>'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400','Premium'=>'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400','Stok Terbatas'=>'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400'];
-            ?>
-            <div class="flex flex-wrap gap-2 mb-3">
-                <?php foreach($badges as $b): $style = $colors[$b] ?? 'bg-slate-100 text-slate-500'; ?>
-                    <span class="px-2 py-1 <?= $style ?> text-[10px] font-bold rounded-md uppercase tracking-wider inline-block"><?= $b ?></span>
-                <?php endforeach; ?>
-            </div>
+        <div class="relative w-full bg-slate-200 dark:bg-slate-900 group overflow-hidden" style="z-index: 0;">
             
-            <h1 class="text-2xl font-extrabold leading-tight mb-2 text-slate-900 dark:text-white"><?= $p['name'] ?></h1>
-            <div class="flex items-center gap-2">
-                <span class="text-xs font-semibold text-slate-500 uppercase"><?= $L['market_label'] ?? 'Pasaran' ?></span>
-                <span class="text-xl font-bold font-mono text-slate-800 dark:text-slate-200">Rp <?= number_format($p['market_price']) ?></span>
-            </div>
+            <div class="absolute inset-0 bg-slate-300 dark:bg-slate-800 animate-pulse z-0" id="skel-hero"></div>
+            
+            <img src="<?= $imgSrc ?>" 
+                 alt="<?= esc($p->name) ?>"
+                 class="w-full h-auto min-h-[50vh] max-h-[85vh] object-cover mx-auto transition-opacity duration-700 opacity-0 relative z-10"
+                 onload="document.getElementById('skel-hero').remove(); this.classList.remove('opacity-0');"
+            >
+            
+            <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-black/60 to-transparent z-20 pointer-events-none"></div>
+        </div>
+
+        <div class="fixed top-0 left-0 w-full p-4 flex justify-between z-50 pointer-events-none">
+            <a href="/" class="pointer-events-auto w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:bg-emerald-500 transition-all duration-300 shadow-lg backdrop-blur-md">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </a>
+            
+            <button onclick="toggleSidebar()" class="pointer-events-auto w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:bg-emerald-500 transition-all duration-300 text-xl shadow-lg backdrop-blur-md">
+                ☰
+            </button>
         </div>
 
         <?php if(session()->get('isLoggedIn')): ?>
-            <a href="/admin/add-link/<?= $p['id'] ?>" class="flex items-center justify-center w-full py-4 mb-8 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl text-slate-500 hover:border-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-bold text-sm bg-slate-50/50 dark:bg-slate-900/50">
-                <?= $L['btn_add_source'] ?? '+ TAMBAH SUMBER' ?>
-            </a>
+           <a href="/admin/edit-product/<?= $p->id ?>" class="fixed bottom-6 right-6 w-14 h-14 bg-amber-500 text-white rounded-full flex items-center justify-center shadow-xl z-[60] hover:scale-110 transition-transform">
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+           </a>
         <?php endif; ?>
 
-        <?php if(!empty($p['description']) && $p['description'] !== 'Belum ada deskripsi produk.'): ?>
-        <div class="mb-6 p-4 glass rounded-2xl border border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-900/10">
-            <h3 class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1"><?= $L['desc_title'] ?? 'CATATAN' ?></h3>
-            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap"><?= esc($p['description']) ?></p>
-        </div>
-        <?php endif; ?>
+        <div class="relative z-30 -mt-12 w-full bg-slate-50 dark:bg-[#0b1120] rounded-t-[2.5rem] shadow-[0_-10px_60px_-15px_rgba(0,0,0,0.3)] border-t border-white/50 dark:border-white/10 pb-20 overflow-hidden">
+            
+            <div class="w-full flex justify-center pt-4 pb-2 bg-slate-50 dark:bg-[#0b1120]">
+                <div class="w-16 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full opacity-60"></div>
+            </div>
 
-        <div class="space-y-4">
-            <?php if(empty($links)): ?>
-                <div class="text-center py-10 opacity-50"><?= $L['empty_links'] ?? 'Belum ada rekomendasi.' ?></div>
-            <?php else: ?>
-                <?php foreach($links as $l): 
-                    $gap = $p['market_price'] - $l['price']; 
-                    $isProfit = $gap > 0; 
-                    $mp = strtolower($l['marketplace']);
-                    $icon = null; 
-                    if(str_contains($mp,'shopee')) $icon='shopee.png';
-                    elseif(str_contains($mp,'tokopedia')) $icon='tokopedia.png';
-                    elseif(str_contains($mp,'tiktok')) $icon='tiktokshop.png';
-                    elseif(str_contains($mp,'lazada')) $icon='lazada.png';
-                    
-                    $badgeColor = 'bg-slate-200 text-slate-500';
-                    if($l['seller_badge']=='Official Store') $badgeColor = 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400';
-                    if($l['seller_badge']=='Star Seller') $badgeColor = 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400';
-                    if($l['seller_badge']=='Power Merchant') $badgeColor = 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400';
+            <div class="px-6 py-6 bg-slate-50 dark:bg-[#0b1120]">
+                
+                <div class="mb-8">
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <?php foreach($p->badges_array as $b): ?>
+                            <span class="px-3 py-1 bg-slate-200 text-slate-700 text-[10px] font-extrabold rounded-full uppercase tracking-wider border border-black/5"><?= esc($b) ?></span>
+                        <?php endforeach; ?>
+                    </div>
 
-                    $realLink = $l['link']; 
-                    if($realLink !== '#' && strpos($realLink, 'http') !== 0) $realLink = 'https://' . $realLink;
-                ?>
-                <div class="glass rounded-2xl p-4 relative group hover:bg-white dark:hover:bg-slate-800 transition-colors">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="flex gap-3">
-                             <div class="w-12 h-12 bg-white rounded-xl p-2 shadow-sm flex items-center justify-center shrink-0">
-                                <?php if($icon): ?><img src="/icons/<?= $icon ?>" class="w-full h-full object-contain"><?php else: ?><span class="text-[8px] font-black text-slate-900 uppercase text-center"><?= $l['marketplace'] ?></span><?php endif; ?>
-                             </div>
-                             <div>
-                                <h3 class="font-bold text-lg text-slate-900 dark:text-white font-mono">Rp <?= number_format($l['price']) ?></h3>
-                                <div class="flex items-center gap-2 mt-1"><span class="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase <?= $badgeColor ?>"><?= $l['seller_badge'] ?></span><p class="text-xs text-slate-500 font-medium truncate w-20"><?= $l['store'] ?></p></div>
-                            </div>
+                    <h1 class="text-3xl font-black leading-tight text-slate-900 dark:text-white mb-6"><?= esc($p->name) ?></h1>
+
+                    <div class="flex items-center justify-between p-5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm mb-8">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1"><?= $L['market_label'] ?? 'ESTIMASI PASAR' ?></p>
+                            <p class="text-2xl font-black font-mono text-slate-800 dark:text-slate-100 tracking-tight"><?= $p->market_price_formatted ?></p>
                         </div>
-                        <div class="text-right">
-                           <div class="text-[10px] font-black tracking-wider <?= $isProfit?'text-emerald-600 dark:text-emerald-400':'text-rose-600 dark:text-rose-400' ?>"><?= $isProfit ? ($L['status_profit']??'HEMAT') : ($L['status_loss']??'RUGI') ?></div>
-                           <div class="text-xs font-bold text-slate-400"><?= $isProfit?'+':'' ?><?= number_format($gap/1000) ?>k</div>
-                        </div>
+                        <?php if(session()->get('isLoggedIn')): ?>
+                            <a href="/admin/add-link/<?= $p->id ?>" class="text-[10px] font-bold bg-emerald-500 text-white px-4 py-2 rounded-lg hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30">+ LINK</a>
+                        <?php endif; ?>
                     </div>
-                    
-                    <div class="flex items-center gap-4 border-t border-slate-200 dark:border-slate-800 pt-3 mt-3 text-xs text-slate-500 font-semibold">
-                        <div class="flex items-center gap-1"><span class="text-yellow-500">★</span> <?= $l['rating_score'] ?></div>
-                        <div class="flex items-center gap-1"><span class="text-slate-400">📦</span> <?= $l['sold_count'] ?> <?= $L['label_sold'] ?? 'Terjual' ?></div>
-                    </div>
-          
-                    <?php if(isset($aiActive) && $aiActive): ?>
-                    <div class="bg-slate-100 dark:bg-black/30 rounded-xl p-3 flex gap-3 items-start mt-3">
-                        <div class="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 mt-0.5"><svg class="w-3 h-3 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg></div>
-                        <div class="flex-1"><?php if(!empty($l['ai_comment'])): ?><p class="text-xs text-slate-600 dark:text-slate-300 italic leading-relaxed">"<?= $l['ai_comment'] ?>"</p><?php else: ?><?php if(session()->get('isLoggedIn')): ?><a href="/admin/regenerate/<?= $l['id'] ?>" class="text-[10px] font-bold text-emerald-600 hover:underline"><?= $L['btn_ai'] ?? 'Cek Kata Ibu' ?></a><?php endif; ?><?php endif; ?></div>
-                    </div>
-                    <?php endif; ?>
-
-                    <div class="mt-4 flex gap-2"><a href="<?= $realLink ?>" target="_blank" class="flex-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-2.5 rounded-xl text-xs font-bold text-center uppercase shadow-lg hover:opacity-90 transition-opacity"><?= $L['btn_check'] ?? 'Lihat Barang' ?></a><?php if(session()->get('isLoggedIn')): ?><a href="/admin/edit-link/<?= $l['id'] ?>" class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-black transition-colors">✎</a><?php endif; ?></div>
-                    <?php if(session()->get('isLoggedIn')): ?><a href="/admin/delete-link/<?= $l['id'] ?>" onclick="return confirm('Hapus?')" class="absolute top-2 right-2 p-2 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></a><?php endif; ?>
                 </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
 
+                <?php if(!empty($p->description)): ?>
+                <div class="mb-10">
+                    <div class="flex items-center gap-2 mb-4 pb-2 border-b border-slate-200 dark:border-slate-800">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">DETAIL PRODUK</span>
+                    </div>
+                    <div class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-medium whitespace-pre-wrap">
+                        <?= esc($p->description) ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest border-l-4 border-emerald-500 pl-3">PILIHAN TOKO</h3>
+                    </div>
+
+                    <div class="space-y-5">
+                        <?php if(empty($links)): ?>
+                            <div class="py-12 text-center border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-3xl opacity-50">
+                                <p class="text-sm font-bold text-slate-500"><?= $L['empty_links'] ?? 'Belum ada data rekomendasi.' ?></p>
+                            </div>
+                        <?php else: ?>
+                            <?php foreach($links as $l): ?>
+                                <?= view_cell('App\Cells\ShopOption::render', [
+                                    'link' => $l, 
+                                    'market_price' => $p->market_price,
+                                    'ai_active' => $aiActive
+                                ]) ?>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 
 <?= $this->endSection() ?>
