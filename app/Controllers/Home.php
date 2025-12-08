@@ -23,8 +23,7 @@ class Home extends BaseController
             $this->cachePage(300); 
         }
 
-        // Kirim ke View (Sekarang $products berisi Objek, bukan Array mentah)
-        return view('welcome_message', [
+        return view('product/index', [
             'products' => $products, 
             'keyword'  => $keyword,
             'sort'     => $sort
