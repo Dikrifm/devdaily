@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="dark"><head><title><?= $L['login_title'] ?? 'LOGIN' ?></title><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://cdn.tailwindcss.com"></script><script>tailwind.config={darkMode:'class'}</script><style>body{background:#000;color:#e4e4e7;font-family:monospace;}</style></head>
+<html lang="id" class="dark"><head><title><?= $L['login_title'] ?? 'LOGIN' ?></title><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="/css/app.css"><script>tailwind.config={darkMode:'class'}</script><style>body{background:#000;color:#e4e4e7;font-family:monospace;}</style></head>
 <body class="flex items-center justify-center min-h-screen bg-black">
     <div class="relative z-10 w-full max-w-sm p-8 bg-zinc-900 border border-emerald-900/50 rounded-2xl">
         <div class="text-center mb-8">

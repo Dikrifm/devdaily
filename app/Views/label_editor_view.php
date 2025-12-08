@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="dark"><head><title>Text Manager</title><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"><script>tailwind.config={darkMode:'class'}</script><style>body{font-family:'JetBrains Mono',monospace;background-color:#050505;color:#e4e4e7} input:focus{border-color:#10b981;}</style></head>
+<html lang="id" class="dark"><head><title>Text Manager</title><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="/css/app.css"><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"><script>tailwind.config={darkMode:'class'}</script><style>body{font-family:'JetBrains Mono',monospace;background-color:#050505;color:#e4e4e7} input:focus{border-color:#10b981;}</style></head>
 <body class="min-h-screen p-4 pb-24">
     <div class="max-w-4xl mx-auto">
         <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
