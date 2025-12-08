@@ -41,3 +41,7 @@ $routes->get("admin/labels", "LabelEditor::index");
 $routes->post("admin/labels/update", "LabelEditor::update");
 $routes->get("admin/labels", "LabelEditor::index");
 $routes->post("admin/labels/update", "LabelEditor::update");
+
+$routes->get('/register', 'Register::index');
+$routes->post('/register/process', 'Register::process');
+$routes->get('/login', 'Register::index'); // Sementara arahkan ke register dulu buat tes

@@ -7,3 +7,6 @@
 .DS_Store
 database.sqlite
 **/*.log
+
+public/adminer.php
+public/uploads/
