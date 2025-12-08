@@ -96,7 +96,8 @@ class Panel extends BaseController {
             $db = \Config\Database::connect();
             $products = $db->table('products')->select('slug')->get()->getResultArray();
             $xml = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
-            $xml .= '<url><loc>' . base_url() . '</loc><changefreq>daily</changefreq><priority>1.0</priority></url>' . PHP_EOL;
+            // Gunakan base_url($slug) langsung. CI4 akan otomatis menyesuaikan dengan config App.php
+            $xml .= '<url><loc>' . base_url($p['slug']) . '</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>' . PHP_EOL;
             foreach ($products as $p) {
                 $xml .= '<url><loc>' . base_url('index.php/cek/' . $p['slug']) . '</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>' . PHP_EOL;
             }

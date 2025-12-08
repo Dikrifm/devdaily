@@ -112,7 +112,7 @@
                     $colors = ['Pilihan Ibu'=>'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400','Lagi Viral'=>'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400','Best Seller'=>'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400','Harga Promo'=>'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400','Premium'=>'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400','Stok Terbatas'=>'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400'];
                 ?>
                 <div class="relative group bg-white dark:bg-[#1e293b] rounded-xl overflow-hidden shadow-lg border border-slate-100 dark:border-slate-800 hover:shadow-2xl hover:border-emerald-500/30 transition-all duration-500 hover:-translate-y-1">
-                    <a href="/index.php/cek/<?= $p['slug'] ?>" class="block">
+                    <a href="/<?= $p['slug'] ?>" class="block">
                         <div class="aspect-[4/3] w-full bg-slate-200 dark:bg-slate-800 relative overflow-hidden group-hover:shadow-lg transition-all">
                               <div class="absolute inset-0 bg-slate-300 dark:bg-slate-700 animate-pulse z-0" id="skel-<?= $p['id'] ?>"></div>
                               <img src="<?= (strpos($p['image_url'],'http')===0)?$p['image_url']:'/'.$p['image_url'] ?>" 

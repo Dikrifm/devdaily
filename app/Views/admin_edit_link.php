@@ -14,7 +14,7 @@
             <h1 class="text-xs font-bold text-slate-500 uppercase tracking-widest">EDIT SUMBER</h1>
             <p class="text-sm font-black text-amber-500 truncate w-48"><?= esc($p['name']) ?></p>
         </div>
-        <a href="/index.php/cek/<?= $p['slug'] ?>" class="text-xs font-bold bg-slate-200 dark:bg-slate-800 px-3 py-1.5 rounded-lg">BATAL</a>
+        <a href="/<?= $p['slug'] ?>" class="text-xs font-bold bg-slate-200 dark:bg-slate-800 px-3 py-1.5 rounded-lg">BATAL</a>
     </div>
 
     <div class="max-w-md mx-auto px-6 pt-24">
