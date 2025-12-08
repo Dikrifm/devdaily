@@ -16,7 +16,7 @@ class Filters extends BaseConfig {
     public $globals = [
         'before' => [
             // 'honeypot',
-            // 'csrf', // CSRF dimatikan global dulu agar tidak konflik dengan login manual
+            'csrf', // CSRF dimatikan global dulu agar tidak konflik dengan login manual
         ],
         'after' => [
             'toolbar',

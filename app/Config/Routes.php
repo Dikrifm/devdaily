@@ -37,8 +37,8 @@ $routes->post("panel/update-settings", "Panel::update_settings");
 $routes->get('login', 'Auth::login');
 $routes->post('auth/attempt_login', 'Auth::attempt_login');
 $routes->get('logout', 'Auth::logout');
-$routes->get('/register', 'Register::index');
-$routes->post('/register/process', 'Register::process');
+//$routes->get('/register', 'Register::index');
+//$routes->post('/register/process', 'Register::process');
 
 // 3. ROUTE PRODUK "CATCH-ALL" (WAJIB PALING BAWAH)
 // Menangkap apa saja yang tidak didefinisikan di atas sebagai "Slug Produk"
