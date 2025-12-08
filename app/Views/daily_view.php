@@ -20,15 +20,22 @@
         </div>
     </aside>
 
-    <div class="relative h-72 w-full overflow-hidden group">
-        <img src="<?= (strpos($p['image_url'],'http')===0)?$p['image_url']:'/'.$p['image_url'] ?>" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
-        <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-slate-50 dark:to-[#09090b]"></div>
-        <a href="/index.php" class="absolute top-6 left-6 w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:bg-emerald-500 transition z-20">←</a>
-        <button onclick="toggleSidebar()" class="absolute top-6 right-6 w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:bg-emerald-500 transition z-20 text-xl">☰</button>
-        <?php if($isAdmin): ?><a href="/index.php/admin/edit-product/<?= $p['id'] ?>" class="absolute bottom-6 right-6 w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:bg-amber-500 hover:text-black transition z-20">✎</a><?php endif; ?>
+     <div class="relative h-72 w-full overflow-hidden group bg-slate-200 dark:bg-slate-800">
+        <div class="absolute inset-0 bg-slate-300 dark:bg-slate-700 animate-pulse z-0" id="skel-hero"></div>
+        <img src="<?= (strpos($p['image_url'],'http')===0)?$p['image_url']:'/'.$p['image_url'] ?>" 
+             alt="<?= esc($p['name']) ?>"
+             class="w-full h-full object-cover transition-opacity duration-700 opacity-0 relative z-10"
+             onload="document.getElementById('skel-hero').remove(); this.classList.remove('opacity-0');"
+        >
+        <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-slate-50 dark:to-[#09090b] z-20 pointer-events-none"></div>
+        <a href="/index.php" class="absolute top-6 left-6 w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:bg-emerald-500 transition z-30">←</a>
+        <button onclick="toggleSidebar()" class="absolute top-6 right-6 w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:bg-emerald-500 transition z-30 text-xl">☰</button>
+        <?php if($isAdmin): ?>
+            <a href="/index.php/admin/edit-product/<?= $p['id'] ?>" class="absolute bottom-6 right-6 w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:bg-amber-500 hover:text-black transition z-30">✎</a>
+        <?php endif; ?>
     </div>
 
-    <div class="max-w-md mx-auto px-4 -mt-20 relative z-10 pb-20">
+    <div class="max-w-md mx-auto px-4 -mt-20 relative z-30 pb-20">
         <div class="glass rounded-3xl p-6 shadow-xl mb-6 bg-white/80 dark:bg-black/60 backdrop-blur-xl">
             <?php 
                 $badges = json_decode($p['badges'] ?? '["Pilihan Ibu"]', true); if(!is_array($badges)) $badges = ['Pilihan Ibu'];

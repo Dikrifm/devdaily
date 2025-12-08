@@ -1,6 +1,6 @@
 <?php namespace App\Controllers;
 class Home extends BaseController {
-    public function index() {
+        public function index() {
         $db = \Config\Database::connect();
         $request = \Config\Services::request();
         
@@ -9,7 +9,7 @@ class Home extends BaseController {
 
         $builder = $db->table('products');
         
-        // Search
+        // Search Logic
         if ($keyword) {
             $builder->like('name', $keyword);
         }
@@ -31,15 +31,20 @@ class Home extends BaseController {
                 break;
         }
 
+        // --- OPTIMASI: SMART CACHING (5 MENIT) ---
+        // Hanya cache jika User sedang TIDAK mencari/filter sesuatu.
+        // Halaman default (Home murni) adalah beban terbesar server.
+        if (!$keyword && $sort == 'newest') {
+            $this->cachePage(300); // 300 detik = 5 menit
+        }
+
         $products = $builder->get()->getResultArray();
 
-// Cache halaman selama 300 detik (5 menit). 
-// Server tidak akan tanya database lagi selama 5 menit. Super Cepat.
-return view('welcome_message', [
-    'products' => $products, 
-    'keyword' => $keyword,
-    'sort' => $sort
-]); 
-
+        return view('welcome_message', [
+            'products' => $products, 
+            'keyword' => $keyword,
+            'sort' => $sort
+        ]); 
     }
+
 }
