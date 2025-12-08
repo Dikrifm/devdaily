@@ -15,8 +15,6 @@
     <style>
         .glass { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); }
         .dark .glass { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .blob { position: absolute; filter: blur(80px); z-index: -1; opacity: 0.6; animation: move 10s infinite alternate; }
-        @keyframes move { from { transform: translate(0,0); } to { transform: translate(20px, -20px); } }
         #sidebar { transition: transform 0.3s ease-in-out; }
         #sticky-header { transition: all 0.3s ease; }
         #sticky-header.scrolled { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.05); padding-top: 1rem; padding-bottom: 1rem; }
@@ -25,21 +23,12 @@
 </head>
 <body class="font-sans min-h-screen transition-colors duration-500 bg-slate-50 text-slate-800 dark:bg-[#0f172a] dark:text-slate-200 relative overflow-x-hidden selection:bg-emerald-500 selection:text-white">
 
-    <?php $isAdmin = session()->get('isLoggedIn'); ?>
-
-    <div class="fixed inset-0 z-0 pointer-events-none">
-        <div class="blob bg-purple-400 w-64 h-64 rounded-full top-0 left-0 mix-blend-multiply dark:mix-blend-normal dark:bg-emerald-900/40"></div>
-        <div class="blob bg-blue-400 w-64 h-64 rounded-full bottom-0 right-0 mix-blend-multiply dark:mix-blend-normal dark:bg-blue-900/40 animation-delay-2000"></div>
-    </div>
-
-    <?php if(session()->getFlashdata('msg')): ?>
-    <div id="toast" class="fixed top-24 right-5 z-[60] transform transition-all duration-500 translate-y-0 opacity-100">
-        <div class="glass border-l-4 border-emerald-500 text-slate-800 dark:text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
-            <h4 class="font-bold text-sm">INFO:</h4><p class="text-xs opacity-80"><?= session()->getFlashdata('msg') ?></p>
-        </div>
-    </div>
-    <script>setTimeout(()=>{document.getElementById('toast').remove()},4000);</script>
-    <?php endif; ?>
+    <?php 
+        $isAdmin = session()->get('isLoggedIn'); 
+        // CEK SINYAL UNTUK SEMBUNYIKAN HEADER
+        $sectionContent = $this->renderSection('hide_header');
+        $hideHeader = (trim($sectionContent) === 'true');
+    ?>
 
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[60] hidden backdrop-blur-sm transition-opacity"></div>
     <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-slate-50 dark:bg-[#0b1120] border-r border-slate-200 dark:border-slate-800 z-[70] transform -translate-x-full shadow-2xl flex flex-col">
@@ -52,7 +41,7 @@
         </div>
         
         <div class="flex-1 overflow-y-auto p-4 space-y-2">
-            <a href="/" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition font-semibold text-sm bg-slate-200/50 dark:bg-slate-800/50"><span>🏠</span> <?= $L['btn_home'] ?? 'Beranda' ?></a>
+             <a href="/" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition font-semibold text-sm bg-slate-200/50 dark:bg-slate-800/50"><span>🏠</span> <?= $L['btn_home'] ?? 'Beranda' ?></a>
              <?php if($isAdmin): ?>
                 <p class="text-[10px] font-bold text-slate-500 uppercase pl-2 mt-4 mb-1">Admin Tools</p>
                 <a href="/admin/create" class="flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-500 hover:text-white transition font-semibold text-sm group"><span>➕</span> Tambah Produk</a>
@@ -61,13 +50,14 @@
                 <a href="/login" class="flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-500 hover:text-white transition font-semibold text-sm mt-4"><span>🔐</span> <?= $L['btn_login'] ?? 'Login' ?></a>
              <?php endif; ?>
         </div>
-
+        
         <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-[#050910]">
             <button onclick="toggleTheme()" class="w-full flex items-center justify-between p-3 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 transition text-xs font-bold uppercase mb-2"><span><?= $L['theme_label'] ?? 'TEMA' ?></span><span id="theme-text">🌙 GELAP</span></button>
             <?php if($isAdmin): ?><a href="/logout" onclick="return confirm('Keluar?')" class="block w-full text-center p-3 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition text-xs font-bold uppercase">LOGOUT</a><?php endif; ?>
         </div>
     </aside>
 
+    <?php if (!$hideHeader): ?>
     <nav id="sticky-header" class="fixed top-0 left-0 w-full z-40 p-4 transition-all duration-300">
         <div class="max-w-lg mx-auto flex justify-between items-center">
             <button onclick="toggleSidebar()" class="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform text-2xl text-slate-800 dark:text-white bg-white/10 backdrop-blur-md border border-white/20 shadow-sm">☰</button>
@@ -79,20 +69,19 @@
             </div>
         </div>
     </nav>
+    <?php endif; ?>
 
-    <main class="relative z-10 pt-24 pb-24">
+    <main class="relative z-10 <?= $hideHeader ? '' : 'pt-24' ?> pb-24">
         <?= $this->renderSection('content') ?>
     </main>
 
     <script>
         const html = document.documentElement; const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('sidebar-overlay'); const header = document.getElementById('sticky-header'); const themeText = document.getElementById('theme-text');
-        window.addEventListener('scroll', () => { if (window.scrollY > 10) { header?.classList.add('scrolled'); } else { header?.classList.remove('scrolled'); } });
+        window.addEventListener('scroll', () => { if (header && window.scrollY > 10) { header.classList.add('scrolled'); } else if(header) { header.classList.remove('scrolled'); } });
         function toggleSidebar() { sidebar.classList.toggle('-translate-x-full'); overlay.classList.toggle('hidden'); }
         function applyTheme() { if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { html.classList.add('dark'); if(themeText) themeText.innerText = '☀️ TERANG'; } else { html.classList.remove('dark'); if(themeText) themeText.innerText = '🌙 GELAP'; } }
         function toggleTheme() { html.classList.contains('dark') ? localStorage.theme = 'light' : localStorage.theme = 'dark'; applyTheme(); }
         applyTheme();
     </script>
-    
-    <?= $this->renderSection('scripts') ?>
 </body>
 </html>
