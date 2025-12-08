@@ -1,5 +1,42 @@
 <!DOCTYPE html>
-<html lang="id" class="dark"><head><title><?= esc($p['name']) ?> | <?= esc($config['site_name']) ?></title><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet"><script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Plus Jakarta Sans','sans-serif']}}}}</script><style>.glass{background:rgba(255,255,255,0.6);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.5)}.dark .glass{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.05)}.spinner{border:2px solid rgba(255,255,255,0.1);border-left-color:#10b981;border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:5px}@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}#sidebar{transition:transform 0.3s ease-in-out}</style></head>
+<html lang="id" class="dark">
+<head>
+    <title><?= esc($p['name']) ?> | <?= esc($config['site_name']) ?></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="description" content="Cek harga termurah untuk <?= esc($p['name']) ?>. <?= esc(substr($p['description'], 0, 150)) ?>...">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="product">
+    <meta property="og:title" content="<?= esc($p['name']) ?> - Pilihan Ibu">
+    <meta property="og:description" content="Harga Pasaran: Rp <?= number_format($p['market_price']) ?>. Cek rekomendasi toko termurah & terpercaya di sini.">
+    <meta property="og:url" content="<?= current_url() ?>">
+    <meta property="og:site_name" content="<?= esc($config['site_name']) ?>">
+    
+    <?php 
+        $imgSrc = (strpos($p['image_url'], 'http') === 0) ? $p['image_url'] : base_url($p['image_url']); 
+    ?>
+    <meta property="og:image" content="<?= $imgSrc ?>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= esc($p['name']) ?>">
+    <meta name="twitter:description" content="Hemat uang belanja! Cek harga termurah <?= esc($p['name']) ?> sekarang.">
+    <meta name="twitter:image" content="<?= $imgSrc ?>">
+
+    <script src="https://cdn.tailwindcss.com"></script> <link rel="stylesheet" href="/css/app.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Plus Jakarta Sans','sans-serif']}}}}</script>
+    <style>
+        .glass{background:rgba(255,255,255,0.6);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.5)}
+        .dark .glass{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.05)}
+        .spinner{border:2px solid rgba(255,255,255,0.1);border-left-color:#10b981;border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:5px}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        #sidebar{transition:transform 0.3s ease-in-out}
+    </style>
+</head>
 <body class="font-sans min-h-screen bg-slate-50 dark:bg-[#09090b] text-slate-800 dark:text-slate-200">
     <?php $isAdmin=session()->get('isLoggedIn'); ?>
 
@@ -105,5 +142,28 @@
         function applyTheme() { if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { html.classList.add('dark'); if(themeText) themeText.innerText = '☀️ TERANG'; } else { html.classList.remove('dark'); if(themeText) themeText.innerText = '🌙 GELAP'; } }
         function toggleTheme() { html.classList.contains('dark') ? localStorage.theme = 'light' : localStorage.theme = 'dark'; applyTheme(); }
         applyTheme();
+    </script>
+        <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": "<?= esc($p['name']) ?>",
+      "image": [
+        "<?= $imgSrc ?>"
+       ],
+      "description": "<?= esc($p['description']) ?>",
+      "brand": {
+        "@type": "Brand",
+        "name": "Pilihan Ibu"
+      },
+      "offers": {
+        "@type": "AggregateOffer",
+        "url": "<?= current_url() ?>",
+        "priceCurrency": "IDR",
+        "lowPrice": "<?= (!empty($links)) ? min(array_column($links, 'price')) : $p['market_price'] ?>",
+        "highPrice": "<?= (!empty($links)) ? max(array_column($links, 'price')) : $p['market_price'] ?>",
+        "offerCount": "<?= count($links) ?>"
+      }
+    }     
     </script>
 </body></html>
