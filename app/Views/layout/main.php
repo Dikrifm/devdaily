@@ -24,7 +24,7 @@
     </style>
 </head>
 
-<body hx-boost="true" hx-indicator="#loading-indicator" class="font-sans min-h-screen transition-colors duration-500 bg-slate-50 text-slate-800 dark:bg-[#0f172a] dark:text-slate-200 relative overflow-x-hidden selection:bg-emerald-500 selection:text-white">
+<body hx-boost="false" hx-indicator="#loading-indicator" class="font-sans min-h-screen transition-colors duration-500 bg-slate-50 text-slate-800 dark:bg-[#0f172a] dark:text-slate-200 relative overflow-x-hidden selection:bg-emerald-500 selection:text-white">
 
     <div id="loading-indicator" class="htmx-indicator-bar"></div>
 
