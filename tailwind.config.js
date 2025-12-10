@@ -1,23 +1,19 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  // Mode JIT (Just-In-Time) aktif secara default di versi baru, tapi kita pastikan pathnya benar
+  // PENTING: Arahkan ke semua folder View & Cells Anda
   content: [
-    // 1. Tangkap semua file di dalam Views (termasuk subfolder cells, layout, dll)
-    "./app/Views/**/*.{php,html,js}",
-    
-    // 2. PENTING: Tangkap juga logic di dalam Class Cells (karena ada logic warna badge di sana)
-    "./app/Cells/**/*.{php,html,js}",
-    
-    // 3. Tangkap file JS publik (jika ada manipulasi class via JS)
-    "./public/**/*.{js,php}",
+    "./app/Views/**/*.php",
+    "./app/Cells/**/*.php",
+    "./app/Controllers/**/*.php", 
+    "./public/js/**/*.js" // Jika ada class di dalam file JS
   ],
-  darkMode: 'class',
+  darkMode: 'class', // Agar fitur Dark Mode kita tetap jalan
   theme: {
     extend: {
+      // Kita pakai font bawaan yang cantik, tapi bisa dicustom disini
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'sans-serif'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
-      // Kita tambahkan safelist untuk warna dinamis jika perlu, tapi content path di atas biasanya cukup
     },
   },
   plugins: [],
