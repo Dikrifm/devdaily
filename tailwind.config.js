@@ -1,19 +1,23 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  // PENTING: Arahkan ke semua folder View & Cells Anda
+  darkMode: 'class',
   content: [
     "./app/Views/**/*.php",
     "./app/Cells/**/*.php",
-    "./app/Controllers/**/*.php", 
-    "./public/js/**/*.js" // Jika ada class di dalam file JS
+    "./public/js/**/*.js",
   ],
-  darkMode: 'class', // Agar fitur Dark Mode kita tetap jalan
   theme: {
     extend: {
-      // Kita pakai font bawaan yang cantik, tapi bisa dicustom disini
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
       },
+      colors: {
+        cyber: {
+          black: '#050505',
+          green: '#00ff41', // Neon Green andalan kita
+        }
+      }
     },
   },
   plugins: [],

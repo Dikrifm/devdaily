@@ -18,6 +18,9 @@ class Panel extends BaseController {
         ], $config);
         $config['badge_list'] = explode(',', $config['badge_list']);
         // -------------------------------------------------
+        // TAMBAHAN: Ambil data badges untuk ditampilkan di widget
+
+        $data['badges'] = $db->table('badges')->orderBy('id', 'DESC')->get()->getResultArray();
 
         $totalProducts = $db->table('products')->countAll();
         $totalLinks = $db->table('links')->countAll();
@@ -42,10 +45,10 @@ class Panel extends BaseController {
             'aiMode' => $config['ai_mode'], // Pakai dari config
             'sitemapInfo' => $sitemapInfo,
             'inventory' => $allProducts,
-            'config' => $config // LEMPAR CONFIG KE VIEW
+            'config' => $config, // LEMPAR CONFIG KE VIEW
+            'badges' => $data['badges']
         ]);
-    }
-
+}
     public function update_settings() {
         $db = \Config\Database::connect();
         $updates = [
@@ -115,4 +118,38 @@ class Panel extends BaseController {
         $db->table('products')->truncate();
         return redirect()->to('/index.php/panel')->with('msg', 'DATABASE DIHAPUS.');
     }
+    
+        // --- LOGIKA BADGE ---
+
+    public function add_badge()
+    {
+        $label = trim($this->request->getPost('label'));
+        $color = $this->request->getPost('color');
+
+        if (!empty($label)) {
+            $db = \Config\Database::connect();
+            $db->table('badges')->insert([
+                'label' => strtoupper($label),
+                'color' => $color
+            ]);
+        }
+
+        return redirect()->to('panel')->with('msg', 'BADGE DITAMBAHKAN');
+    }
+
+    public function delete_badge($id)
+    {
+        $db = \Config\Database::connect();
+        
+        // Hapus relasi dulu di pivot table (Kebersihan data)
+        $db->table('product_badges')->where('badge_id', $id)->delete();
+        
+        // Hapus master badge
+        $db->table('badges')->where('id', $id)->delete();
+
+        return redirect()->to('panel')->with('msg', 'BADGE DIHAPUS');
+    }
+
+    
+    
 }

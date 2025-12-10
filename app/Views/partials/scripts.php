@@ -1,54 +1,57 @@
+<script src="<?= base_url('js/htmx.min.js') ?>"></script>
+<script src="<?= base_url('js/preload.js') ?>"></script>
+
 <script>
-    function initUI() {
-        const html = document.documentElement; 
-        const themeText = document.getElementById('theme-text');
-        const header = document.getElementById('sticky-header');
-
-        // Theme Check
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { 
-            html.classList.add('dark'); 
-            if(themeText) themeText.innerText = '☀️ TERANG'; 
-        } else { 
-            html.classList.remove('dark'); 
-            if(themeText) themeText.innerText = '🌙 GELAP'; 
-        }
-
-        // Scroll Listener
-        window.onscroll = () => { 
-            const currentHeader = document.getElementById('sticky-header');
-            if (currentHeader && !currentHeader.classList.contains('hidden') && window.scrollY > 10) { 
-                currentHeader.classList.add('scrolled'); 
-            } else if(currentHeader) { 
-                currentHeader.classList.remove('scrolled'); 
-            } 
-        };
-    }
-
-    function toggleSidebar() { 
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
-        if(sidebar && overlay) {
-            sidebar.classList.toggle('-translate-x-full'); 
-            overlay.classList.toggle('hidden'); 
-        }
-    }
-    
-    function toggleTheme() { 
+    // --- A. LOGIKA TEMA (Dark/Light Mode) ---
+    function toggleThemeGlobal() {
         const html = document.documentElement;
-        html.classList.contains('dark') ? localStorage.theme = 'light' : localStorage.theme = 'dark'; 
-        initUI(); 
+        if (html.classList.contains('dark')) {
+            html.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        } else {
+            html.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        }
     }
 
-    // Init
-    initUI();
-    
-    // HTMX Event Hook
-    document.addEventListener('htmx:afterSwap', function(evt) {
-        initUI();
-        window.scrollTo(0, 0);
-        const sidebar = document.getElementById('sidebar');
-        if(sidebar && !sidebar.classList.contains('-translate-x-full')) {
-            toggleSidebar();
+    // --- B. LOGIKA SIDEBAR (Buka & Tutup) ---
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar-panel'); 
+        const backdrop = document.getElementById('sidebar-backdrop');
+        
+        // Hapus class hidden dan geser panel masuk
+        if (sidebar && backdrop) {
+            backdrop.classList.remove('hidden');
+            // Sedikit delay agar transisi opacity jalan
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                sidebar.classList.remove('-translate-x-full');
+            }, 10);
         }
-    });
+    }
+
+    function closeSidebar() {
+        const sidebar = document.getElementById('sidebar-panel');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        
+        if (sidebar && backdrop) {
+            sidebar.classList.add('-translate-x-full'); // Geser keluar
+            backdrop.classList.add('opacity-0');        // Fade out
+            
+            // Tunggu animasi 300ms selesai baru hidden
+            setTimeout(() => {
+                backdrop.classList.add('hidden');
+            }, 300);
+        }
+    }
+    
+    // --- C. INISIALISASI TEMA (Saat Halaman Dimuat) ---
+    // Agar tidak berkedip putih saat refresh di mode gelap
+    (function() {
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    })();
 </script>

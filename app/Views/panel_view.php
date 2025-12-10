@@ -1,29 +1,185 @@
 <!DOCTYPE html>
-<html lang="id" class="dark"><head><title><?= $L['header_title'] ?? 'PANEL' ?></title><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="/css/app.css"><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"><script>tailwind.config={darkMode:'class'}</script><style>body{font-family:'JetBrains Mono',monospace;background-color:#050505;color:#00ff41}.grid-bg{background-image:linear-gradient(#111 1px,transparent 1px),linear-gradient(90deg,#111 1px,transparent 1px);background-size:20px 20px}.cyber-border{border:1px solid #1f2937;position:relative;background:rgba(0,0,0,0.6)}.cyber-border::after{content:'';position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid #00ff41;border-left:2px solid #00ff41}.cyber-border::before{content:'';position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid #00ff41;border-right:2px solid #00ff41}input,textarea{background:#000;border:1px solid #333;color:white;padding:8px;font-size:12px;width:100%;outline:none}input:focus,textarea:focus{border-color:#00ff41}button:hover{opacity:0.8}</style></head>
+<html lang="id" class="dark">
+<head>
+    <title><?= $L['header_title'] ?? 'PANEL' ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/app.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>tailwind.config={darkMode:'class'}</script>
+    <style>
+        body{font-family:'JetBrains Mono',monospace;background-color:#050505;color:#00ff41}
+        .grid-bg{background-image:linear-gradient(#111 1px,transparent 1px),linear-gradient(90deg,#111 1px,transparent 1px);background-size:20px 20px}
+        .cyber-border{border:1px solid #1f2937;position:relative;background:rgba(0,0,0,0.6)}
+        .cyber-border::after{content:'';position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid #00ff41;border-left:2px solid #00ff41}
+        .cyber-border::before{content:'';position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid #00ff41;border-right:2px solid #00ff41}
+        input,textarea{background:#000;border:1px solid #333;color:white;padding:8px;font-size:12px;width:100%;outline:none}
+        input:focus,textarea:focus{border-color:#00ff41}
+        button:hover{opacity:0.8}
+    </style>
+</head>
 <body class="min-h-screen p-4 pb-20 grid-bg">
-    <?php if(session()->getFlashdata('msg')): ?><div class="mb-4 p-3 border border-green-500 bg-green-900/20 text-green-400 text-xs font-bold">>> <?= session()->getFlashdata('msg') ?></div><?php endif; ?>
-    <?php if(session()->getFlashdata('error')): ?><div class="mb-4 p-3 border border-red-500 bg-red-900/20 text-red-400 text-xs font-bold">>> ERROR: <?= session()->getFlashdata('error') ?></div><?php endif; ?>
+    
+    <?php if(session()->getFlashdata('msg')): ?>
+        <div class="mb-4 p-3 border border-green-500 bg-green-900/20 text-green-400 text-xs font-bold">>> <?= session()->getFlashdata('msg') ?></div>
+    <?php endif; ?>
+    <?php if(session()->getFlashdata('error')): ?>
+        <div class="mb-4 p-3 border border-red-500 bg-red-900/20 text-red-400 text-xs font-bold">>> ERROR: <?= session()->getFlashdata('error') ?></div>
+    <?php endif; ?>
 
     <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
-        <div><h1 class="text-xl font-bold tracking-widest text-white"><?= $L['header_title'] ?? 'COMMAND PANEL' ?></h1><p class="text-[10px] text-gray-500"><?= $L['header_sub'] ?? 'ROOT ACCESS' ?></p></div>
-        <div class="flex gap-2"><a href="/index.php" class="bg-green-900/20 border border-green-700 px-4 py-2 text-xs font-bold text-white hover:bg-green-500 hover:text-black"><?= $L['nav_front'] ?? 'FRONT' ?></a><a href="/index.php/logout" onclick="return confirm('Disconnect?')" class="bg-red-900/20 border border-red-800 px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-900"><?= $L['nav_logout'] ?? 'EXIT' ?></a></div>
+        <div>
+            <h1 class="text-xl font-bold tracking-widest text-white"><?= $L['header_title'] ?? 'COMMAND PANEL' ?></h1>
+            <p class="text-[10px] text-gray-500"><?= $L['header_sub'] ?? 'ROOT ACCESS' ?></p>
+        </div>
+        <div class="flex gap-2">
+            <a href="/" class="bg-green-900/20 border border-green-700 px-4 py-2 text-xs font-bold text-white hover:bg-green-500 hover:text-black"><?= $L['nav_front'] ?? 'FRONT' ?></a>
+            <a href="/logout" onclick="return confirm('Disconnect?')" class="bg-red-900/20 border border-red-800 px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-900"><?= $L['nav_logout'] ?? 'EXIT' ?></a>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
         <div class="space-y-6">
-            <div class="cyber-border p-4"><h3 class="text-xs font-bold text-gray-500 mb-4 border-b border-gray-800 pb-2"><?= $L['card_metrics'] ?? 'METRICS' ?></h3><div class="grid grid-cols-2 gap-4 text-center"><div><p class="text-[10px] text-gray-500">TARGETS</p><h2 class="text-2xl font-bold text-white"><?= $totalProducts ?></h2></div><div><p class="text-[10px] text-gray-500">LINKS</p><h2 class="text-2xl font-bold text-white"><?= $totalLinks ?></h2></div><div class="col-span-2 pt-2 border-t border-gray-800"><p class="text-[10px] text-gray-500">POTENTIAL PROFIT</p><h2 class="text-3xl font-bold text-emerald-400">Rp <?= number_format($potentialProfit/1000000, 1) ?>M</h2></div></div></div>
-            <div class="cyber-border p-4"><h3 class="text-xs font-bold text-blue-400 mb-2"><?= $L['card_ai'] ?? 'AI AGENT' ?></h3><div class="flex justify-between items-center"><span class="text-xs text-gray-400">Gemini 2.5 Flash</span><span class="text-xs font-bold <?= ($aiMode=='1')?'text-green-400':'text-red-500' ?>"><?= ($aiMode=='1')?'ONLINE':'OFFLINE' ?></span></div><a href="/index.php/panel/toggle-ai" class="block w-full text-center mt-3 py-2 text-xs font-bold border <?= ($aiMode=='1')?'border-green-600 bg-green-900/20 text-green-400':'border-red-600 bg-red-900/20 text-red-400' ?>"><?= ($aiMode=='1')?'DEACTIVATE':'ACTIVATE' ?></a></div>
+            <div class="cyber-border p-4">
+                <h3 class="text-xs font-bold text-gray-500 mb-4 border-b border-gray-800 pb-2"><?= $L['card_metrics'] ?? 'METRICS' ?></h3>
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div><p class="text-[10px] text-gray-500">TARGETS</p><h2 class="text-2xl font-bold text-white"><?= $totalProducts ?></h2></div>
+                    <div><p class="text-[10px] text-gray-500">LINKS</p><h2 class="text-2xl font-bold text-white"><?= $totalLinks ?></h2></div>
+                    <div class="col-span-2 pt-2 border-t border-gray-800"><p class="text-[10px] text-gray-500">POTENTIAL PROFIT</p><h2 class="text-3xl font-bold text-emerald-400">Rp <?= number_format($potentialProfit/1000000, 1) ?>M</h2></div>
+                </div>
+            </div>
+            
+            <div class="cyber-border p-4">
+                <h3 class="text-xs font-bold text-blue-400 mb-2"><?= $L['card_ai'] ?? 'AI AGENT' ?></h3>
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs text-gray-400">Gemini 2.5 Flash</span>
+                    <span class="text-xs font-bold <?= ($aiMode=='1')?'text-green-400':'text-red-500' ?>"><?= ($aiMode=='1')?'ONLINE':'OFFLINE' ?></span>
+                </div>
+                <a href="/index.php/panel/toggle-ai" class="block w-full text-center py-2 text-xs font-bold border <?= ($aiMode=='1')?'border-green-600 bg-green-900/20 text-green-400':'border-red-600 bg-red-900/20 text-red-400' ?>"><?= ($aiMode=='1')?'DEACTIVATE':'ACTIVATE' ?></a>
+            </div>
         </div>
+
         <div class="space-y-6">
-            <div class="cyber-border p-4 border-emerald-900/30"><h3 class="text-xs font-bold text-emerald-500 mb-2">DICTIONARY SYSTEM</h3><p class="text-[10px] text-gray-500 mb-3">Edit semua label teks di website.</p><a href="/index.php/admin/labels" class="block w-full text-center py-2 bg-emerald-900/20 border border-emerald-700 text-emerald-500 text-xs font-bold hover:bg-emerald-500 hover:text-black transition">BUKA TEXT EDITOR ></a></div>
-            <div class="cyber-border p-4 border-blue-900/30"><h3 class="text-xs font-bold text-blue-400 mb-3">WEBSITE SETTINGS</h3><form action="/index.php/panel/update-settings" method="post" class="space-y-3"><?= csrf_field() ?><div class="grid grid-cols-3 gap-2"><div class="col-span-2"><label class="text-[10px] text-gray-500 uppercase">Nama Utama</label><input type="text" name="site_name" value="<?= $config['site_name'] ?>" required></div><div><label class="text-[10px] text-gray-500 uppercase">Ekstensi</label><input type="text" name="site_domain" value="<?= $config['site_domain'] ?>"></div></div><div><label class="text-[10px] text-gray-500 uppercase">Tagline</label><input type="text" name="site_tagline" value="<?= $config['site_tagline'] ?>"></div><div><label class="text-[10px] text-gray-500 uppercase">Daftar Badge (Koma)</label><textarea name="badge_list" class="h-16"><?= implode(',', $config['badge_list']) ?></textarea></div><button type="submit" class="w-full py-2 bg-blue-600/20 border border-blue-600 text-blue-400 text-xs font-bold hover:bg-blue-600 hover:text-white transition">SIMPAN</button></form></div>
-            <div class="cyber-border p-4 border-yellow-900/30"><h3 class="text-xs font-bold text-yellow-500 mb-3"><?= $L['card_security'] ?? 'SECURITY' ?></h3><form action="/index.php/panel/change-password" method="post" class="space-y-2"><?= csrf_field() ?><input type="password" name="old_password" placeholder="Password Lama" required><input type="password" name="new_password" placeholder="Password Baru" required><button type="submit" class="w-full py-2 bg-yellow-600/20 border border-yellow-600 text-yellow-500 text-xs font-bold hover:bg-yellow-600 hover:text-black transition">UPDATE CREDENTIALS</button></form></div>
-            <div class="cyber-border p-4 border-purple-900/30"><h3 class="text-xs font-bold text-purple-500 mb-3"><?= $L['card_seo'] ?? 'SEO' ?></h3><div class="flex justify-between items-center mb-2"><span class="text-[10px] text-gray-500">Sitemap Status</span><span class="text-[10px] text-white"><?= $sitemapInfo ?></span></div><a href="/index.php/panel/generate-sitemap" class="block w-full text-center py-2 bg-purple-600/20 border border-purple-600 text-purple-400 text-xs font-bold hover:bg-purple-600 hover:text-white transition">GENERATE SITEMAP.XML</a></div>
-            <div class="cyber-border p-4 border-red-900/50 opacity-50 hover:opacity-100 transition-opacity"><h3 class="text-xs font-bold text-red-600 mb-2"><?= $L['card_danger'] ?? 'DANGER' ?></h3><a href="/index.php/panel/nuke" onclick="return confirm('WARNING: ALL DATA WILL BE LOST. CONTINUE?')" class="block w-full text-center py-2 bg-red-950 border border-red-800 text-red-500 text-xs font-bold hover:bg-red-600 hover:text-white"><?= $L['btn_nuke'] ?? 'NUKE' ?></a></div>
+            
+            <div class="cyber-border p-4 border-emerald-900/30">
+                <h3 class="text-xs font-bold text-emerald-500 mb-2">DICTIONARY SYSTEM</h3>
+                <p class="text-[10px] text-gray-500 mb-3">Edit semua label teks di website.</p>
+                <a href="/index.php/admin/labels" class="block w-full text-center py-2 bg-emerald-900/20 border border-emerald-700 text-emerald-500 text-xs font-bold hover:bg-emerald-500 hover:text-black transition">BUKA TEXT EDITOR ></a>
+            </div>
+
+            <div class="cyber-border p-4 border-pink-900/30">
+                <h3 class="text-xs font-bold text-pink-500 mb-3">BADGE SYSTEM</h3>
+                
+                <div class="h-24 overflow-y-auto mb-3 pr-1 space-y-1 custom-scroll">
+                    <?php if(empty($badges)): ?>
+                        <p class="text-[10px] text-gray-600 italic text-center py-2">LIST KOSONG</p>
+                    <?php else: ?>
+                        <div class="flex flex-wrap gap-2">
+                            <?php foreach($badges as $b): ?>
+                                <div class="flex items-center bg-gray-900 border border-gray-700 rounded px-2 py-1">
+                                    <span class="w-2 h-2 rounded-full <?= $b['color'] ?> mr-2"></span>
+                                    <span class="text-[10px] text-gray-300 font-bold mr-2"><?= esc($b['label']) ?></span>
+                                    <a href="/index.php/panel/badge/delete/<?= $b['id'] ?>" class="text-[10px] text-red-500 hover:text-white font-bold" onclick="return confirm('X?')">x</a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+             </div>
+
+                <form action="/index.php/panel/badge/add" method="post" class="flex gap-1">
+                    <?= csrf_field() ?>
+                    <input type="text" name="label" placeholder="NAMA..." required class="bg-black border border-pink-900/50 text-pink-500 text-[10px] w-2/3 focus:border-pink-500 px-2">
+                    
+                    <select name="color" class="bg-black border border-pink-900/50 text-gray-400 text-[10px] w-1/3 focus:border-pink-500">
+                        <option value="bg-emerald-500">Hijau</option>
+                        <option value="bg-blue-500">Biru</option>
+                        <option value="bg-red-500">Merah</option>
+                        <option value="bg-yellow-500">Kuning</option>
+                        <option value="bg-purple-500">Ungu</option>
+                        <option value="bg-pink-500">Pink</option>
+                    </select>
+
+                    <button type="submit" class="bg-pink-900/30 border border-pink-700 text-pink-500 px-2 hover:bg-pink-500 hover:text-black font-bold text-[10px]">+</button>
+                </form>
+            </div>
+
+
+            <div class="cyber-border p-4 border-blue-900/30">
+                <h3 class="text-xs font-bold text-blue-400 mb-3">WEBSITE SETTINGS</h3>
+                <form action="/index.php/panel/update-settings" method="post" class="space-y-3">
+                    <?= csrf_field() ?>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="col-span-2"><label class="text-[10px] text-gray-500 uppercase">Nama Utama</label><input type="text" name="site_name" value="<?= $config['site_name'] ?>" required></div>
+                        <div><label class="text-[10px] text-gray-500 uppercase">Ekstensi</label><input type="text" name="site_domain" value="<?= $config['site_domain'] ?>"></div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-gray-500 uppercase">Tagline</label>
+                        <input type="text" name="site_tagline" value="<?= $config['site_tagline'] ?>">
+                    </div>
+                    <button type="submit" class="w-full py-2 bg-blue-600/20 border border-blue-600 text-blue-400 text-xs font-bold hover:bg-blue-600 hover:text-white transition">SIMPAN</button>
+                </form>
+            </div>
+
+            <div class="cyber-border p-4 border-yellow-900/30">
+                <h3 class="text-xs font-bold text-yellow-500 mb-3"><?= $L['card_security'] ?? 'SECURITY' ?></h3>
+                <form action="/index.php/panel/change-password" method="post" class="space-y-2">
+                    <?= csrf_field() ?>
+                    <input type="password" name="old_password" placeholder="Password Lama" required>
+                    <input type="password" name="new_password" placeholder="Password Baru" required>
+                    <button type="submit" class="w-full py-2 bg-yellow-600/20 border border-yellow-600 text-yellow-500 text-xs font-bold hover:bg-yellow-600 hover:text-black transition">UPDATE CREDENTIALS</button>
+                </form>
+            </div>
+
+            <div class="cyber-border p-4 border-purple-900/30">
+                <h3 class="text-xs font-bold text-purple-500 mb-3"><?= $L['card_seo'] ?? 'SEO' ?></h3>
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] text-gray-500">Sitemap Status</span>
+                    <span class="text-[10px] text-white"><?= $sitemapInfo ?></span>
+                </div>
+                <a href="/index.php/panel/generate-sitemap" class="block w-full text-center py-2 bg-purple-600/20 border border-purple-600 text-purple-400 text-xs font-bold hover:bg-purple-600 hover:text-white transition">GENERATE SITEMAP.XML</a>
+            </div>
+
+            <div class="cyber-border p-4 border-red-900/50 opacity-50 hover:opacity-100 transition-opacity">
+                <h3 class="text-xs font-bold text-red-600 mb-2"><?= $L['card_danger'] ?? 'DANGER' ?></h3>
+                <a href="/index.php/panel/nuke" onclick="return confirm('WARNING: ALL DATA WILL BE LOST. CONTINUE?')" class="block w-full text-center py-2 bg-red-950 border border-red-800 text-red-500 text-xs font-bold hover:bg-red-600 hover:text-white"><?= $L['btn_nuke'] ?? 'NUKE' ?></a>
+            </div>
         </div>
     </div>
 
-    <div class="mt-8 cyber-border p-4 border-emerald-900/30"><h3 class="text-xs font-bold text-emerald-500 mb-4 uppercase tracking-widest"><?= $L['inv_title'] ?? 'INVENTORY' ?></h3><div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="text-[10px] text-gray-500 border-b border-gray-800"><th class="p-2">ID</th><th class="p-2"><?= $L['col_product'] ?? 'PRODUK' ?></th><th class="p-2"><?= $L['col_price'] ?? 'HARGA' ?></th><th class="p-2"><?= $L['col_action'] ?? 'AKSI' ?></th></tr></thead><tbody class="text-xs text-gray-300"><?php foreach($inventory as $item): ?><tr class="border-b border-gray-900 hover:bg-white/5 transition"><td class="p-2 font-mono text-gray-600">#<?= $item['id'] ?></td><td class="p-2 font-bold text-white"><?= esc($item['name']) ?></td><td class="p-2 font-mono text-emerald-400">Rp <?= number_format($item['market_price']) ?></td><td class="p-2 text-right"><a href="/<?= $item['slug'] ?>" target="_blank" class="text-blue-400 hover:text-white mr-2">LIHAT</a><a href="/index.php/admin/edit-product/<?= $item['id'] ?>" class="text-yellow-500 hover:text-white mr-2">EDIT</a><a href="/index.php/admin/delete-product/<?= $item['id'] ?>" onclick="return confirm('Hapus permanen?')" class="text-red-500 hover:text-white">HAPUS</a></td></tr><?php endforeach; ?></tbody></table></div><div class="mt-4 pt-4 border-t border-gray-900 text-center"><a href="/index.php/admin/create" class="inline-block bg-emerald-900/30 border border-emerald-700 text-emerald-500 px-6 py-2 text-xs font-bold hover:bg-emerald-500 hover:text-black transition"><?= $L['btn_new'] ?? '+ INPUT' ?></a></div></div>
+    <div class="mt-8 cyber-border p-4 border-emerald-900/30">
+        <h3 class="text-xs font-bold text-emerald-500 mb-4 uppercase tracking-widest"><?= $L['inv_title'] ?? 'INVENTORY' ?></h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-[10px] text-gray-500 border-b border-gray-800">
+                        <th class="p-2">ID</th>
+                        <th class="p-2"><?= $L['col_product'] ?? 'PRODUK' ?></th>
+                        <th class="p-2"><?= $L['col_price'] ?? 'HARGA' ?></th>
+                        <th class="p-2"><?= $L['col_action'] ?? 'AKSI' ?></th>
+                    </tr>
+                </thead>
+                <tbody class="text-xs text-gray-300">
+                    <?php foreach($inventory as $item): ?>
+                    <tr class="border-b border-gray-900 hover:bg-white/5 transition">
+                        <td class="p-2 font-mono text-gray-600">#<?= $item['id'] ?></td>
+                        <td class="p-2 font-bold text-white"><?= esc($item['name']) ?></td>
+                        <td class="p-2 font-mono text-emerald-400">Rp <?= number_format($item['market_price']) ?></td>
+                        <td class="p-2 text-right">
+                            <a href="/<?= $item['slug'] ?>" target="_blank" class="text-blue-400 hover:text-white mr-2">LIHAT</a>
+                            <a href="/index.php/admin/edit-product/<?= $item['id'] ?>" class="text-yellow-500 hover:text-white mr-2">EDIT</a>
+                            <a href="/index.php/admin/delete-product/<?= $item['id'] ?>" onclick="return confirm('Hapus permanen?')" class="text-red-500 hover:text-white">HAPUS</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-4 pt-4 border-t border-gray-900 text-center">
+            <a href="/index.php/admin/create" class="inline-block bg-emerald-900/30 border border-emerald-700 text-emerald-500 px-6 py-2 text-xs font-bold hover:bg-emerald-500 hover:text-black transition"><?= $L['btn_new'] ?? '+ INPUT' ?></a>
+        </div>
+    </div>
     
     <div class="mt-12 text-center border-t border-gray-900 pt-4"><p class="text-[8px] text-gray-600">SERVER: <?= $_SERVER['SERVER_SOFTWARE'] ?? 'Localhost' ?> | PHP <?= phpversion() ?> | DB: <?= $dbSize ?></p></div>
-</body></html>
+</body>
+</html>

@@ -1,32 +1,40 @@
-<?php 
+<?php
 
 namespace App\Controllers;
 
 use App\Models\ProductModel;
 
-class Home extends BaseController 
+class Home extends BaseController
 {
-    public function index() 
+    public function index()
     {
-        $request = \Config\Services::request();
-        $keyword = $request->getGet('q');
-        $sort    = $request->getGet('sort') ?? 'newest';
+        $model = new ProductModel();
 
-        // Panggil Model (Gudang Cerdas)
-        $productModel = new ProductModel();
-        
-        // Ambil data (kembaliannya adalah Array of Entities)
-        $products = $productModel->getFilteredProducts($keyword, $sort);
+        // 1. Ambil Input Filter (Search/Sort)
+        $keyword = $this->request->getGet('search');
+        $sort    = $this->request->getGet('sort') ?? 'newest';
 
-        // Optimasi Cache Halaman (Hanya jika tidak sedang mencari/filter)
-        if (!$keyword && $sort == 'newest') {
-            $this->cachePage(300); 
-        }
+        // 2. EKSEKUSI DATA (SOLUSI ERROR DISINI)
+        // Kita WAJIB memanggil ->paginate() atau ->findAll() 
+        // agar Object Model berubah menjadi Array Data yang bisa dihitung (count).
+        $products = $model->getFilteredProducts($keyword, $sort)->paginate(10);
 
-        return view('product/index', [
-            'products' => $products, 
-            'keyword'  => $keyword,
-            'sort'     => $sort
-        ]); 
+        $data = [
+            'title'     => 'DevDaily Store',
+            'products'  => $products,           // Sekarang ini adalah Array, bukan Model lagi
+            'pager'     => $model->pager,
+            'keyword'   => $keyword,
+            'sort'      => $sort,
+            
+            // Variabel Bahasa (Agar tidak error undefined index L)
+            'L'         => [
+                'catalog_title' => 'KATALOG',
+                'search_placeholder' => 'Cari produk...',
+                'no_result' => 'Produk tidak ditemukan.'
+            ]
+        ];
+
+        // Kita gunakan view yang sama dengan halaman produk
+        return view('product/index', $data);
     }
 }

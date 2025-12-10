@@ -1,39 +1,68 @@
-<?php 
+<?php
 
 namespace App\Controllers;
 
+use App\Controllers\BaseController;
 use App\Models\ProductModel;
-use App\Models\LinkModel;
 
-class Product extends BaseController 
+class Product extends BaseController
 {
-    // Menangani halaman detail produk (domain.com/slug-produk)
-    public function index($slug) 
-    {
-        $db = \Config\Database::connect();
-        
-        // 1. Ambil Data via Model
-        $productModel = new ProductModel();
-        $product = $productModel->where('slug', $slug)->first();
+    protected $productModel;
 
-        // 2. 404 jika tidak ketemu
+    public function __construct()
+    {
+        $this->productModel = new ProductModel();
+    }
+
+    public function index()
+    {
+        // 1. Ambil Input dari URL (?search=...&sort=...)
+        $keyword = $this->request->getGet('search');
+        $sort    = $this->request->getGet('sort') ?? 'newest';
+
+        // 2. EKSEKUSI DATA (FIX DISINI)
+        // Kita panggil getFilteredProducts() lalu sambung dengan paginate()
+        // Agar yang masuk ke variabel $products adalah ARRAY DATA, bukan Object Model.
+        $products = $this->productModel->getFilteredProducts($keyword, $sort)->paginate(10);
+
+        $data = [
+            'title'     => 'Katalog Produk',
+            'products'  => $products,                   // <--- Ini sekarang sudah jadi Array
+            'pager'     => $this->productModel->pager,  // Pagination
+            'keyword'   => $keyword,
+            'sort'      => $sort,
+            
+            // Variabel Bahasa (sesuai error log Anda yang memanggil $L)
+            'L' => [
+                'catalog_title' => 'KATALOG',
+                'search_placeholder' => 'Cari produk...',
+                'no_result' => 'Produk tidak ditemukan.'
+            ]
+        ];
+
+        return view('product/index', $data);
+    }
+
+    public function detail($slug)
+    {
+        // Ambil data produk berdasarkan slug
+        $product = $this->productModel->where('slug', $slug)->first();
+
+        // Jika tidak ketemu, lempar error 404
         if (!$product) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Produk '$slug' tidak ditemukan.");
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        // 3. Ambil Links
-        $linkModel = new LinkModel();
-        $links = $linkModel->getLinksByProduct($product->id);
+        // Ambil Link Belanja terkait produk ini
+        $db = \Config\Database::connect();
+        $links = $db->table('links')->where('product_id', $product->id)->get()->getResultArray();
 
-        // 4. Cek AI Setting
-        $aiSetting = $db->table('settings')->where('key', 'ai_mode')->get()->getRowArray();
-        $aiActive = ($aiSetting && $aiSetting['value'] == '1');
+        $data = [
+            'title' => $product->name,
+            'p'     => $product,  // Variabel p dipakai di view detail
+            'links' => $links
+        ];
 
-        // 5. Panggil View di lokasi baru
-        return view('product/detail', [
-            'p' => $product, 
-            'links' => $links,
-            'aiActive' => $aiActive
-        ]);
+        return view('product/detail', $data);
     }
 }

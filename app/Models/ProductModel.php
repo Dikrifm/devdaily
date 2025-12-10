@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-use App\Entities\Product;
 
 class ProductModel extends Model
 {
@@ -11,87 +10,86 @@ class ProductModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     
-    // Sambungkan dengan Entity yang baru kita buat
-    protected $returnType       = Product::class;
-    protected $useSoftDeletes   = false; // Kita belum setup soft delete di migrasi
-    
-    // Kolom yang boleh diisi (Mass Assignment Protection)
+    protected $returnType       = 'object'; 
+    protected $useSoftDeletes   = false;
+
+    // Kolom yang boleh diisi
     protected $allowedFields    = [
-        'slug', 'name', 'market_price', 
-        'image_url', 'badges', 'description'
+        'name', 'slug', 'description', 'image_url', 
+        'market_price', 'badges', 'created_at' // 'badges' masih kita biarkan di sini agar tidak error query lama, meski tidak dipakai
     ];
 
-    // Validation Rules (Dipindahkan dari Controller Admin)
-    protected $validationRules = [
-        'name'         => 'required|min_length[3]|max_length[200]',
-        // 'slug'      => handled automatically or generated
-        'market_price' => 'required|numeric|greater_than[0]',
-        // Image validation biasanya tetap di controller karena berhubungan dengan file upload fisik,
-        // tapi validasi URL/String-nya bisa di sini.
-    ];
-
-    protected $validationMessages = [
-        'name' => [
-            'required' => 'Nama produk wajib diisi, Bu.',
-            'min_length' => 'Nama produk kependekan.',
-            'is_unique' => 'Produk ini sudah ada di daftar.'
-        ],
-        'market_price' => [
-            'required' => 'Harga pasaran harus diisi.',
-            'numeric' => 'Harga harus berupa angka.',
-        ]
-    ];
-
-    // Callbacks
-    protected $allowCallbacks = true;
-    protected $beforeInsert   = ['generateSlug'];
-    protected $beforeUpdate   = ['generateSlug'];
+    // --- LOGIKA BADGE OTOMATIS (Event) ---
+    protected $afterFind = ['injectBadges'];
 
     /**
-     * Otomatis membuat Slug dari Name sebelum simpan
+     * 1. FUNGSI INJECT BADGE (Yang tadi kita buat)
+     * Mengambil data relasi dari tabel product_badges & badges
      */
-    protected function generateSlug(array $data)
+    protected function injectBadges(array $data)
     {
-        if (isset($data['data']['name'])) {
-            // Buat slug: "iPhone 15 Pro" -> "iphone-15-pro"
-            $slug = url_title($data['data']['name'], '-', true);
-            
-            // Simpan ke data yang akan diinsert
-            $data['data']['slug'] = $slug;
+        if (empty($data['data'])) {
+            return $data;
         }
+
+        $db = \Config\Database::connect();
+
+        // Helper Query
+        $getBadges = function($productId) use ($db) {
+            return $db->table('product_badges')
+                      ->select('badges.label, badges.color')
+                      ->join('badges', 'badges.id = product_badges.badge_id')
+                      ->where('product_badges.product_id', $productId)
+                      ->get()
+                      ->getResultArray();
+        };
+
+        // Handle findAll (Array of Objects)
+        if ($data['method'] === 'findAll') {
+            foreach ($data['data'] as $key => $product) {
+                $data['data'][$key]->badges_array = $getBadges($product->id); 
+            }
+        }
+        
+        // Handle find/first (Single Object)
+        elseif ($data['method'] === 'find' || $data['method'] === 'first') {
+            $data['data']->badges_array = $getBadges($data['data']->id);
+        }
+
         return $data;
     }
-    
-    /**
-     * Custom Method untuk Pencarian & Filter
-     * Menggantikan switch-case di Home.php lama
-     */
-    public function getFilteredProducts(?string $keyword, string $sort = 'newest')
-    {
-        $builder = $this; // $this di sini merujuk ke query builder model
 
-        // 1. Filter Pencarian
+    /**
+     * 2. FUNGSI PENCARIAN & SORTING (Yang Hilang & Bikin Error)
+     * Dipakai oleh Controller Product/Home untuk Search Bar & Filter
+     */
+    public function getFilteredProducts($keyword = null, $sort = 'newest')
+    {
+        // A. Logika Pencarian (Jika ada keyword)
         if ($keyword) {
-            $builder->like('name', $keyword);
+            $this->groupStart()
+                 ->like('name', $keyword)
+                 ->orLike('description', $keyword)
+                 ->groupEnd();
         }
 
-        // 2. Filter Sorting
+        // B. Logika Sorting
         switch ($sort) {
-            case 'price_high':
-                $builder->orderBy('market_price', 'DESC');
+            case 'price_asc':
+                $this->orderBy('market_price', 'ASC');
                 break;
-            case 'price_low':
-                $builder->orderBy('market_price', 'ASC');
+            case 'price_desc':
+                $this->orderBy('market_price', 'DESC');
                 break;
-            case 'name_asc':
-                $builder->orderBy('name', 'ASC');
+            case 'oldest':
+                $this->orderBy('created_at', 'ASC');
                 break;
             case 'newest':
             default:
-                $builder->orderBy('id', 'DESC');
+                $this->orderBy('created_at', 'DESC');
                 break;
         }
 
-        return $builder->findAll(); // Mengembalikan array of Product Entities
+        return $this; // Kembalikan Builder agar bisa di-chain dengan paginate()
     }
 }

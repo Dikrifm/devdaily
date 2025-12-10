@@ -1,19 +1,134 @@
+/* 1. IMPORTS & DIRECTIVES */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom CSS untuk menghilangkan Scrollbar tapi tetap bisa discroll */
+/* 2. BASE STYLES (Global Defaults) */
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans antialiased text-slate-800 bg-white;
+  }
+  
+  /* Mode Gelap Default */
+  .dark body {
+    @apply text-slate-200 bg-[#0b1120]; /* Warna background dark mode utama */
+  }
+
+  /* Font khusus Admin Panel */
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* 3. COMPONENTS (Custom Classes) */
+@layer components {
+  
+  /* --- A. FRONTEND: GLASSMORPHISM --- */
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm;
+  }
+  
+  .dark .glass {
+    @apply bg-[#1e293b]/70 border-white/5;
+  }
+
+  /* --- B. ADMIN: CYBERPUNK THEME --- */
+  /* Dipindahkan dari inline style panel_view.php */
+  
+  .grid-bg {
+    background-color: #050505;
+    background-image: 
+      linear-gradient(#111 1px, transparent 1px),
+      linear-gradient(90deg, #111 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .cyber-border {
+    @apply relative border border-gray-800 bg-black/60;
+  }
+
+  /* Sudut Siku Cyberpunk (Corner Accents) */
+  .cyber-border::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 10px; height: 10px;
+    border-top: 2px solid #00ff41; /* Neon Green */
+    border-left: 2px solid #00ff41;
+    z-index: 10;
+  }
+
+  .cyber-border::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 10px; height: 10px;
+    border-bottom: 2px solid #00ff41;
+    border-right: 2px solid #00ff41;
+    z-index: 10;
+  }
+
+  /* --- C. UTILITIES: CUSTOM SCROLLBAR --- */
+  /* Dipakai di admin/product/form.php & panel_view.php */
+  
+  .custom-scroll::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scroll::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full;
+  }
+
+  .dark .custom-scroll::-webkit-scrollbar-thumb {
+    @apply bg-slate-700;
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb:hover {
+    @apply bg-emerald-500;
+  }
+  
+  /* Khusus Panel Admin (Neon Scroll) */
+  .grid-bg .custom-scroll::-webkit-scrollbar-thumb {
+    background-color: #333;
+  }
+  .grid-bg .custom-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: #00ff41;
+  }
+
+  /* --- D. FORM HELPERS --- */
+  /* Checkbox Badge Custom */
+  .badge-check:checked + div {
+    @apply border-emerald-500 bg-emerald-50 text-emerald-600;
+  }
+  .dark .badge-check:checked + div {
+    @apply bg-emerald-900/20 text-emerald-400;
+  }
+}
+
+/* 4. UTILITIES (Animation & Layout) */
 @layer utilities {
-    .no-scrollbar::-webkit-scrollbar {
-        display: none;
-    }
-    .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
-    
-    /* Efek Glass yang lebih konsisten */
-    .glass {
-        @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg border border-white/20 dark:border-slate-700/30;
-    }
+  .text-shadow-neon {
+    text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+  }
+  
+  /* Hides scrollbar but allows scrolling */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
