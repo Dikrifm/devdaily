@@ -9,28 +9,43 @@ use App\Models\LinkModel;
 use App\Models\ProductBadgeModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 
+/**
+ * Class Product
+ * * Controller Pengelola Produk (Versi Refactor v3).
+ * Menerapkan prinsip:
+ * - #26 Service Layer (Delegasi logika bisnis ke ProductService)
+ * - #15 Validation (Gerbang pertahanan pertama)
+ */
 class Product extends AdminBaseController
 {
+    // Models untuk keperluan READ data (Menampilkan form/tabel)
     protected $productModel;
     protected $marketplaceModel;
     protected $badgeModel;
     protected $linkModel;
     protected $productBadgeModel;
 
+    // Service untuk keperluan WRITE data (Create, Update, Delete)
+    protected $productService;
+
     public function initController($request, $response, $logger)
     {
         parent::initController($request, $response, $logger);
+        
+        // Load Models (Hanya untuk Read)
         $this->productModel      = new ProductModel();
         $this->marketplaceModel  = new MarketplaceModel();
         $this->badgeModel        = new BadgeModel();
         $this->linkModel         = new LinkModel();
         $this->productBadgeModel = new ProductBadgeModel();
+
+        // Load Service (Untuk Eksekusi Logika Berat)
+        $this->productService = service('productService');
     }
 
     public function index()
     {
         $this->data['title']    = 'Daftar Produk';
-        // Ambil produk dan urutkan terbaru
         $this->data['products'] = $this->productModel->orderBy('id', 'DESC')->findAll();
         
         return view('admin/product/index', $this->data);
@@ -44,16 +59,13 @@ class Product extends AdminBaseController
             $product = $this->productModel->find($id);
             if (!$product) throw PageNotFoundException::forPageNotFound();
             
-            // Ambil Data Relasi (Links & Badges)
+            // Hydrate relasi untuk ditampilkan di form
             $product->links = $this->linkModel->where('product_id', $id)->findAll();
-            
-            // Ambil ID badge yang aktif untuk produk ini (Array sederhana)
-            $activeBadges = $this->productBadgeModel->where('product_id', $id)->findColumn('badge_id') ?? [];
-            $product->activeBadges = $activeBadges;
+            $product->activeBadges = $this->productBadgeModel->where('product_id', $id)->findColumn('badge_id') ?? [];
 
         } else {
             $product = new \App\Entities\Product();
-            $product->active = true; // Default aktif
+            $product->active = true; 
             $product->links = [];
             $product->activeBadges = [];
         }
@@ -65,18 +77,22 @@ class Product extends AdminBaseController
         return view('admin/product/form', $this->data);
     }
 
+    /**
+     * Proses Simpan (Create/Update)
+     * Sekarang jauh lebih bersih karena logika dipindah ke Service.
+     */
     public function save()
     {
         $id = $this->request->getPost('id');
 
-        // 1. VALIDASI DATA UTAMA
+        // 1. Validasi Input Dasar (Controller sebagai Gatekeeper)
         $rules = [
             'name'         => 'required|min_length[3]',
             'slug'         => "required|alpha_dash|is_unique[products.slug,id,{$id}]",
             'market_price' => 'required|numeric',
         ];
 
-        // Validasi Gambar
+        // Validasi format file gambar (jika ada upload)
         $img = $this->request->getFile('image');
         if ($img && $img->isValid()) {
             $rules['image'] = 'uploaded[image]|is_image[image]|max_size[image,2048]';
@@ -86,9 +102,8 @@ class Product extends AdminBaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        // 2. SIMPAN PRODUK
-        $data = [
-            'id'           => $id ?: null,
+        // 2. Siapkan Data
+        $productData = [
             'name'         => $this->request->getPost('name'),
             'slug'         => $this->request->getPost('slug'),
             'description'  => $this->request->getPost('description'),
@@ -96,64 +111,35 @@ class Product extends AdminBaseController
             'active'       => $this->request->getPost('active') ? 1 : 0,
         ];
 
-        // Handle Image Upload
-        if ($img && $img->isValid() && !$img->hasMoved()) {
-            $newName = $img->getRandomName();
-            $img->move(FCPATH . 'uploads', $newName);
-            $data['image_url'] = 'uploads/' . $newName;
+        // Ambil data relasi (Links & Badges)
+        $links  = $this->request->getPost('links') ?? [];
+        $badges = $this->request->getPost('badges') ?? [];
+
+        // 3. Panggil Service untuk Eksekusi
+        if ($id) {
+            // Update Existing
+            $success = $this->productService->update($id, $productData, $img, $links, $badges);
+        } else {
+            // Create New
+            $success = $this->productService->create($productData, $img, $links, $badges);
         }
 
-        if (!$this->productModel->save($data)) {
-            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan produk.');
+        // 4. Handle Hasil Service
+        if ($success) {
+            return redirect()->to('/admin/products')->with('message', 'Produk berhasil disimpan.');
+        } else {
+            // Ambil error dari Service (misal: "Gagal upload gambar")
+            return redirect()->back()->withInput()->with('error', implode(', ', $this->productService->getErrors()));
         }
-
-        // Ambil ID Produk (Baru atau Existing)
-        $productId = $id ?: $this->productModel->getInsertID();
-
-        // 3. SIMPAN LINKS (RELASI MARKETPLACE)
-        // Strategi: Hapus semua link lama, insert yang baru (Full Sync)
-        $this->linkModel->where('product_id', $productId)->delete(); // Soft delete dulu
-        $this->linkModel->purgeDeleted(); // Hard delete fisik agar bersih
-
-        $linksInput = $this->request->getPost('links'); // Array dari Form Repeater
-        if ($linksInput && is_array($linksInput)) {
-            foreach ($linksInput as $link) {
-                // Skip jika URL kosong
-                if (empty($link['url'])) continue;
-
-                $this->linkModel->insert([
-                    'product_id'     => $productId,
-                    'marketplace_id' => $link['marketplace_id'],
-                    'store_name'     => $link['store_name'],
-                    'price'          => $link['price'],
-                    'url'            => $link['url'],
-                    'rating'         => $link['rating'] ?? null,
-                    'sold_count'     => $link['sold_count'] ?? null,
-                ]);
-            }
-        }
-
-        // 4. SIMPAN BADGES (RELASI PIVOT)
-        // Strategi: Hapus relasi lama, insert baru
-        $this->productBadgeModel->where('product_id', $productId)->delete();
-        
-        $badgesInput = $this->request->getPost('badges'); // Array ID [1, 3, 5]
-        if ($badgesInput && is_array($badgesInput)) {
-            foreach ($badgesInput as $badgeId) {
-                $this->productBadgeModel->insert([
-                    'product_id' => $productId,
-                    'badge_id'   => $badgeId
-                ]);
-            }
-        }
-
-        return redirect()->to('/admin/products')->with('message', 'Produk berhasil disimpan sepenuhnya.');
     }
 
     public function delete($id)
     {
-        $this->productModel->delete($id);
-        if ($this->request->is('htmx')) return '';
-        return redirect()->to('/admin/products')->with('message', 'Produk dihapus.');
+        if ($this->productService->delete($id)) {
+            if ($this->request->is('htmx')) return ''; // Respon kosong utk HTMX (baris hilang)
+            return redirect()->to('/admin/products')->with('message', 'Produk dihapus.');
+        }
+
+        return redirect()->back()->with('error', 'Gagal menghapus produk.');
     }
 }

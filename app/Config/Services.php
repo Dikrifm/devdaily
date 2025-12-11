@@ -3,6 +3,8 @@
 namespace Config;
 
 use CodeIgniter\Config\BaseService;
+use App\Services\ImageService;
+use App\Services\ProductService;
 
 /**
  * Services Configuration file.
@@ -19,14 +21,29 @@ use CodeIgniter\Config\BaseService;
  */
 class Services extends BaseService
 {
-    /*
-     * public static function example($getShared = true)
-     * {
-     *     if ($getShared) {
-     *         return static::getSharedInstance('example');
-     *     }
-     *
-     *     return new \CodeIgniter\Example();
-     * }
+    /**
+     * The Image Service (Studio Digital)
+     * Menangani upload dan manipulasi gambar.
      */
+    public static function imageService($getShared = true)
+    {
+        if ($getShared) {
+            return static::getSharedInstance('imageService');
+        }
+
+        return new ImageService();
+    }
+
+    /**
+     * The Product Service (Otak Bisnis Produk)
+     * Menangani CRUD Produk, Link, dan Badge dalam satu transaksi.
+     */
+    public static function productService($getShared = true)
+    {
+        if ($getShared) {
+            return static::getSharedInstance('productService');
+        }
+
+        return new ProductService();
+    }
 }
