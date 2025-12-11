@@ -3,17 +3,17 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-use App\Entities\Link;
+use App\Entities\Page;
 
-class LinkModel extends Model
+class PageModel extends Model
 {
-    protected $table            = 'links';
+    protected $table            = 'pages';
     protected $primaryKey       = 'id';
-    protected $returnType       = Link::class;
+    protected $returnType       = Page::class;
     protected $useSoftDeletes   = true;
     protected $allowedFields    = [
-        'product_id', 'marketplace_id', 'store_name', 
-        'price', 'url', 'rating', 'sold_count', 'seller_badge'
+        'title', 'slug', 'content', 
+        'meta_title', 'meta_description', 'active'
     ];
 
     protected $useTimestamps = true;

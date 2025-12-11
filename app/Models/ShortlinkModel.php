@@ -3,17 +3,16 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-use App\Entities\Link;
+use App\Entities\Shortlink;
 
-class LinkModel extends Model
+class ShortlinkModel extends Model
 {
-    protected $table            = 'links';
+    protected $table            = 'shortlinks';
     protected $primaryKey       = 'id';
-    protected $returnType       = Link::class;
+    protected $returnType       = Shortlink::class;
     protected $useSoftDeletes   = true;
     protected $allowedFields    = [
-        'product_id', 'marketplace_id', 'store_name', 
-        'price', 'url', 'rating', 'sold_count', 'seller_badge'
+        'code', 'original_url', 'description', 'hit_count', 'active'
     ];
 
     protected $useTimestamps = true;

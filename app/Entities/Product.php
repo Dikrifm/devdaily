@@ -6,57 +6,33 @@ use CodeIgniter\Entity\Entity;
 
 class Product extends Entity
 {
-    // Mapping tipe data otomatis
-    protected $casts = [
-        'id'           => 'integer',
-        'market_price' => 'integer',
-        'badges'       => 'json', // CI4 otomatis decode JSON ke Array
+    protected $datamap = [];
+    protected $dates   = ['created_at', 'updated_at', 'deleted_at'];
+    protected $casts   = [
+        'market_price' => 'float',
+        'active'       => 'boolean',
     ];
 
     /**
-     * Accessor untuk Harga Pasaran yang sudah diformat Rp
-     * Penggunaan di View: $product->market_price_formatted
+     * Accessor: Format Rupiah (Rp 50.000)
      */
-    public function getMarketPriceFormatted(): string
+    public function getFormattedPrice(): string
     {
         return 'Rp ' . number_format($this->attributes['market_price'], 0, ',', '.');
     }
 
     /**
-     * Accessor untuk URL Gambar yang aman
-     * Menangani logika absolute vs relative path
-     * Penggunaan di View: $product->image_src
+     * Helper: Cek Image URL (Lokal vs Hotlink)
      */
-    public function getImageSrc(): string
+    public function getImageUrl(): string
     {
         $url = $this->attributes['image_url'] ?? '';
+        if (empty($url)) return base_url('uploads/no-image.jpg');
         
-        // Jika kosong atau null, kembalikan placeholder
-        if (empty($url)) {
-            return 'https://placehold.co/600x800/1e293b/FFF?text=NO+IMAGE';
-        }
-
-        // Jika sudah ada http/https (link eksternal), biarkan
+        // Jika hotlink (http), kembalikan langsung. Jika lokal, bungkus base_url
         if (strpos($url, 'http') === 0) {
             return $url;
         }
-
-        // Jika path lokal, bungkus dengan base_url
         return base_url($url);
-    }
-
-    /**
-     * Memastikan badges selalu return array, walau DB kosong/rusak
-     */
-    public function getBadgesArray(): array
-    {
-        // Karena sudah dicast 'json' di atas, $this->badges sudah berupa array atau null
-        $badges = $this->badges;
-        
-        if (empty($badges) || !is_array($badges)) {
-            return ['Pilihan Ibu']; // Default badge
-        }
-        
-        return $badges;
     }
 }

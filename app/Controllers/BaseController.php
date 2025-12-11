@@ -1,4 +1,6 @@
-<?php namespace App\Controllers;
+<?php
+
+namespace App\Controllers;
 
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\CLIRequest;
@@ -6,48 +8,65 @@ use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use App\Models\IdentityModel;
 
-abstract class BaseController extends Controller {
+/**
+ * Class BaseController
+ *
+ * BaseController provides a convenient place for loading components
+ * and performing functions that are needed by all your controllers.
+ * Extend this class in any new controllers:
+ * class Home extends BaseController
+ */
+abstract class BaseController extends Controller
+{
+    /**
+     * Instance of the main Request object.
+     *
+     * @var CLIRequest|IncomingRequest
+     */
     protected $request;
-    protected $helpers = [];
-    protected $appConfig = [];
-    protected $L = []; // INI VARIABEL KAMUS KITA
 
-    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger) {
+    /**
+     * An array of helpers to be loaded automatically upon
+     * class instantiation. These helpers will be available
+     * to all other controllers that extend BaseController.
+     *
+     * @var array
+     */
+    protected $helpers = ['form', 'url', 'text', 'number']; // Helpers wajib
+
+    /**
+     * Data global yang bisa diakses di View (mirip $this->data di Admin)
+     * @var array
+     */
+    protected $data = [];
+
+    protected $identityModel;
+
+    /**
+     * Constructor.
+     */
+    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
+    {
+        // Do Not Edit This Line
         parent::initController($request, $response, $logger);
 
-        $db = \Config\Database::connect();
+        // Preload any models, libraries, etc, here.
 
-        // 1. LOAD CONFIG UTAMA
-        $query = $db->table('settings')->get()->getResultArray();
-        $settings = [];
-        foreach($query as $row) { $settings[$row['key']] = $row['value']; }
+        // --- FIX V3: LOAD IDENTITY (PENGGANTI SETTINGS) ---
+        // Kita gunakan Model yang baru, bukan Query Builder manual ke tabel 'settings'
+        $this->identityModel = new IdentityModel();
         
-        $this->appConfig = [
-            'site_name' => $settings['site_name'] ?? 'IDA WIDIAWATI',
-            'site_tagline' => $settings['site_tagline'] ?? 'Kurasi Belanja',
-            'site_domain' => $settings['site_domain'] ?? '.shop',
-            'badge_list' => explode(',', $settings['badge_list'] ?? 'Pilihan Ibu'),
-            'ai_mode' => $settings['ai_mode'] ?? '0'
-        ];
-
-        // 2. LOAD LABELS (KAMUS) - PAKE CACHE BIAR NGEBUT
-        $cachePath = WRITEPATH . 'cache/site_labels.json';
-        if (file_exists($cachePath)) {
-            $this->L = json_decode(file_get_contents($cachePath), true);
-        } else {
-            // Jika cache belum ada, ambil dari DB lalu buat cache
-            $qLabels = $db->table('site_labels')->get()->getResultArray();
-            $labelMap = [];
-            foreach($qLabels as $r) { $labelMap[$r['key']] = $r['value']; }
-            $this->L = $labelMap;
-            file_put_contents($cachePath, json_encode($labelMap));
+        try {
+            $identities = $this->identityModel->findAll();
+            foreach ($identities as $id) {
+                // Konversi ke format $site_nama_key
+                $this->data['site_' . $id->key] = $id->value;
+            }
+        } catch (\Exception $e) {
+            // Fallback jika database belum siap/kosong (agar tidak crash total)
+            log_message('error', 'Gagal memuat Identity: ' . $e->getMessage());
         }
-
-        // 3. SEBARKAN KE VIEW
-        \Config\Services::renderer()->setData([
-            'config' => $this->appConfig,
-            'L' => $this->L
-        ], 'raw');
     }
 }

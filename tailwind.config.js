@@ -1,24 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: 'class',
   content: [
-    "./app/Views/**/*.php",
-    "./app/Cells/**/*.php",
-    "./public/js/**/*.js",
+    "./app/Views/**/*.php",       // Pindai semua View (Admin, Layout, Parsial)
+    "./app/Controllers/**/*.php", // Pindai Controller (jika ada class dinamis di logic)
+    "./public/js/**/*.js"         // Pindai file JS kustom
   ],
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        sans: ['Inter', 'sans-serif'], // Kita standarkan font Inter
       },
-      colors: {
-        cyber: {
-          black: '#050505',
-          green: '#00ff41', // Neon Green andalan kita
-        }
-      }
     },
   },
-  plugins: [],
+  plugins: [], // Biarkan kosong dulu agar tidak error jika plugin belum diinstall
 }

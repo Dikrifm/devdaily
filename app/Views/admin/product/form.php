@@ -1,137 +1,191 @@
-<?= $this->extend('layout/main') ?>
-
-<?php
-    $isEdit = !empty($p);
-    $title = $isEdit ? 'Edit: ' . esc($p['name']) : 'Input Target Baru';
-    $action = $isEdit ? route_to('admin.product.update') : route_to('admin.product.store');
-    
-    // Data Default
-    $nameVal = $isEdit ? $p['name'] : '';
-    $priceVal = $isEdit ? $p['market_price'] : '';
-    $descVal = $isEdit ? $p['description'] : '';
-    $imgVal = $isEdit ? $p['image_url'] : '';
-
-    // [PERBAIKAN] Logika Deteksi URL vs Lokal Path
-    $displayImg = '';
-    if (!empty($imgVal)) {
-        // Jika dimulai dengan http, berarti link luar. Jika tidak, bungkus dengan base_url()
-        $displayImg = (strpos($imgVal, 'http') === 0) ? $imgVal : base_url($imgVal);
-    }
-?>
-
-<?= $this->section('title') ?><?= $title ?><?= $this->endSection() ?>
-<?= $this->section('hide_header') ?>true<?= $this->endSection() ?>
-<?= $this->section('main_padding') ?>pt-0<?= $this->endSection() ?>
+<?= $this->extend('layout/dashboard_layout') ?>
 
 <?= $this->section('content') ?>
 
-    <div class="fixed top-0 left-0 w-full bg-white/90 dark:bg-[#09090b]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 z-50 px-6 py-4 flex justify-between items-center shadow-sm">
-        <h1 class="text-sm font-black text-slate-700 dark:text-white uppercase tracking-widest truncate w-48"><?= $title ?></h1>
-        <div class="flex items-center gap-3">
-            <?php if($isEdit): ?>
-                <a href="<?= route_to('admin.product.delete', $p['id']) ?>" onclick="return confirm('Hapus permanen?')" class="w-8 h-8 flex items-center justify-center rounded-full bg-red-100 text-red-500 hover:bg-red-500 hover:text-white transition">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </a>
-            <?php endif; ?>
-            <a href="<?= route_to('panel.dashboard') ?>" class="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg">BATAL</a>
+<form action="/admin/products/save" method="post" enctype="multipart/form-data" class="space-y-8">
+    <?= csrf_field() ?>
+    <input type="hidden" name="id" value="<?= $product->id ?>">
+
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-800"><?= $title ?></h1>
+        <div class="space-x-3">
+            <a href="/admin/products" class="text-gray-500 hover:text-gray-700">Batal</a>
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 shadow-sm">Simpan Produk</button>
         </div>
     </div>
 
-    <div class="max-w-md mx-auto px-6 pt-24 pb-40">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        <?php if(session()->getFlashdata('error')): ?>
-            <div class="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-[10px] font-bold">
-                ⚠️ <?= session()->getFlashdata('error') ?>
-            </div>
-        <?php endif; ?>
-
-        <div class="mb-8 relative group">
-            <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-            <div class="relative bg-white dark:bg-slate-900 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-500 rounded-xl p-5 transition-all text-center">
-                <div class="text-2xl mb-2">✨</div>
-                <h3 class="text-xs font-black text-slate-700 dark:text-white uppercase">Magic Paste</h3>
-                <textarea id="magicPasteArea" class="w-full h-12 bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg p-2 text-xs outline-none mt-2" placeholder="Tempel teks Share Shopee/Tokped..."></textarea>
-            </div>
-        </div>
-
-        <form action="<?= $action ?>" method="post" enctype="multipart/form-data" id="productForm" class="space-y-6" novalidate>
-            <?= csrf_field() ?>
-            <?php if($isEdit): ?><input type="hidden" name="id" value="<?= $p['id'] ?>"><?php endif; ?>
-
-            <div class="space-y-2">
-                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nama Produk</label>
-                <textarea name="name" id="nameField" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 rounded-2xl font-bold text-lg min-h-[60px]" required><?= esc($nameVal) ?></textarea>
-            </div>
-
-            <div class="space-y-2">
-                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Foto Produk</label>
-                <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-2xl p-2">
-                    <div class="flex bg-slate-100 dark:bg-black rounded-xl p-1 mb-3">
-                        <button type="button" onclick="switchImgTab('upload')" id="tab-upload" class="flex-1 py-2 text-[10px] font-bold rounded-lg bg-white dark:bg-slate-800 shadow text-emerald-600 transition-all">UPLOAD</button>
-                        <button type="button" onclick="switchImgTab('link')" id="tab-link" class="flex-1 py-2 text-[10px] font-bold rounded-lg text-slate-500 hover:text-emerald-500 transition-all">LINK</button>
+        <div class="lg:col-span-2 space-y-6">
+            
+            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Informasi Dasar</h3>
+                
+                <div class="grid grid-cols-1 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Produk</label>
+                        <input type="text" name="name" id="nameInput" value="<?= old('name', $product->name) ?>" class="w-full rounded-lg border-gray-300 border p-2 shadow-sm" required>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Slug URL</label>
+                            <input type="text" name="slug" id="slugInput" value="<?= old('slug', $product->slug) ?>" class="w-full bg-gray-50 text-gray-500 rounded-lg border-gray-300 border p-2 shadow-sm" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Harga Pasar (Rp)</label>
+                            <input type="number" name="market_price" value="<?= old('market_price', $product->market_price) ?>" class="w-full rounded-lg border-gray-300 border p-2 shadow-sm" required>
+                        </div>
                     </div>
 
-                    <div id="panel-upload" class="block p-4 text-center border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl">
-                        <span class="text-xl block mb-2">📁</span>
-                        <input type="file" name="image_file" class="text-xs text-slate-500 w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-emerald-50 file:text-emerald-700" onchange="previewFile(this)">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                        <textarea name="description" rows="4" class="w-full rounded-lg border-gray-300 border p-2 shadow-sm"><?= old('description', $product->description) ?></textarea>
                     </div>
-
-                    <div id="panel-link" class="hidden">
-                        <input type="url" id="urlField" name="image_url" value="<?= esc($imgVal) ?>" class="w-full bg-slate-50 dark:bg-black border border-slate-200 dark:border-slate-700 p-3 rounded-xl text-xs" placeholder="https://..." oninput="document.getElementById('imgPreview').src=this.value; document.getElementById('imgPreview').classList.remove('hidden');">
-                    </div>
-
-                    <img id="imgPreview" src="<?= $displayImg ?>" class="w-full h-48 object-contain mt-2 bg-slate-50 dark:bg-black rounded-lg <?= empty($displayImg)?'hidden':'' ?>">
                 </div>
             </div>
 
-            <div class="space-y-2">
-                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Estimasi Harga</label>
-                <div class="relative">
-                    <span class="absolute left-4 top-4 text-slate-400 font-bold z-10">Rp</span>
-                    <input type="tel" id="priceDisplay" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 pl-12 rounded-2xl font-mono font-bold text-xl dark:text-white" placeholder="0" value="<?= $priceVal ? number_format($priceVal,0,',','.') : '' ?>">
-                    <input type="hidden" name="market_price" id="priceReal" value="<?= esc($priceVal) ?>">
+            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Varian Link Toko</h3>
+                    <button type="button" onclick="addLinkRow()" class="text-sm text-blue-600 font-medium hover:underline">+ Tambah Link</button>
                 </div>
-            </div>
 
-            <div class="space-y-2">
-                <div class="flex justify-between items-end">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Label</label>
-                    <a href="<?= route_to('panel.dashboard') ?>" class="text-[9px] text-emerald-500 font-bold hover:underline">+ KELOLA</a>
-                </div>
-                <div class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-1">
-                    <?php if(!empty($availableBadges)): ?>
-                        <?php foreach($availableBadges as $badge): ?>
-                            <?php $isChecked = in_array($badge['id'], $checkedIds ?? []) ? 'checked' : ''; ?>
-                            <label class="cursor-pointer relative group">
-                                <input type="checkbox" name="badge_ids[]" value="<?= $badge['id'] ?>" class="badge-check peer sr-only" <?= $isChecked ?>>
-                                <div class="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-center gap-2 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 dark:peer-checked:bg-emerald-900/20 transition-all">
-                                    <span class="w-2 h-2 rounded-full <?= $badge['color'] ?>"></span>
-                                    <span class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-300 peer-checked:text-emerald-600"><?= esc($badge['label']) ?></span>
+                <div id="linksContainer" class="space-y-4">
+                    <?php if(!empty($product->links)): ?>
+                        <?php foreach($product->links as $index => $link): ?>
+                            <div class="link-row grid grid-cols-12 gap-3 items-end bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                <div class="col-span-3">
+                                    <label class="text-xs text-gray-500">Marketplace</label>
+                                    <select name="links[<?= $index ?>][marketplace_id]" class="w-full text-sm rounded border-gray-300">
+                                        <?php foreach($marketplaces as $mp): ?>
+                                            <option value="<?= $mp->id ?>" <?= $mp->id == $link->marketplace_id ? 'selected' : '' ?>><?= $mp->name ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
-                            </label>
+                                <div class="col-span-3">
+                                    <label class="text-xs text-gray-500">Nama Toko</label>
+                                    <input type="text" name="links[<?= $index ?>][store_name]" value="<?= $link->store_name ?>" class="w-full text-sm rounded border-gray-300">
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="text-xs text-gray-500">Harga</label>
+                                    <input type="number" name="links[<?= $index ?>][price]" value="<?= $link->price ?>" class="w-full text-sm rounded border-gray-300">
+                                </div>
+                                <div class="col-span-3">
+                                    <label class="text-xs text-gray-500">URL Produk</label>
+                                    <input type="text" name="links[<?= $index ?>][url]" value="<?= $link->url ?>" class="w-full text-sm rounded border-gray-300">
+                                </div>
+                                <div class="col-span-1 text-center">
+                                    <button type="button" onclick="this.closest('.link-row').remove()" class="text-red-500 hover:text-red-700">×</button>
+                                </div>
+                            </div>
                         <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="text-[10px] text-slate-400 col-span-2 text-center py-4 border border-dashed border-slate-300 rounded-xl">Belum ada badge.</div>
                     <?php endif; ?>
                 </div>
+                
+                <?php if(empty($product->links)): ?>
+                    <p id="emptyLinkMsg" class="text-sm text-gray-400 text-center py-4">Belum ada link marketplace.</p>
+                <?php endif; ?>
             </div>
+        </div>
 
-            <div class="space-y-2">
-                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Catatan</label>
-                <textarea name="description" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 rounded-2xl text-sm min-h-[150px] dark:text-slate-300"><?= esc($descVal) ?></textarea>
-            </div>
+        <div class="space-y-6">
             
-            <div class="fixed bottom-0 left-0 w-full bg-white/90 dark:bg-[#09090b]/90 border-t border-slate-200 dark:border-slate-800 p-4 backdrop-blur-sm z-40">
-                 <button type="button" onclick="submitFormManually()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-2xl shadow-lg transition-transform active:scale-95 text-sm tracking-widest uppercase flex justify-center items-center gap-2">
-                    <?= $isEdit ? 'SIMPAN PERUBAHAN' : 'SIMPAN TARGET' ?>
-                </button>
+            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Media</h3>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Utama</label>
+                    <?php if($product->image_url): ?>
+                        <img src="<?= $product->getImageUrl() ?>" class="w-full h-48 object-cover rounded-lg mb-3 border">
+                    <?php endif; ?>
+                    <input type="file" name="image" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+
+                <div class="border-t pt-4 mt-4">
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input type="checkbox" name="active" value="1" <?= $product->active ? 'checked' : '' ?> class="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                        <span class="text-gray-900 font-medium">Publikasikan Produk</span>
+                    </label>
+                </div>
             </div>
 
-        </form>
+            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Labels / Badges</h3>
+                <div class="space-y-2">
+                    <?php foreach($badges as $badge): ?>
+                    <label class="flex items-center space-x-3 p-2 rounded hover:bg-gray-50 cursor-pointer border border-transparent hover:border-gray-200">
+                        <input type="checkbox" name="badges[]" value="<?= $badge->id ?>" 
+                            <?= in_array($badge->id, $product->activeBadges) ? 'checked' : '' ?> 
+                            class="h-4 w-4 text-blue-600 rounded border-gray-300">
+                        <span class="<?= $badge->color ?> px-2 py-0.5 rounded text-xs font-bold"><?= $badge->label ?></span>
+                    </label>
+                    <?php endforeach; ?>
+                </div>
+                <div class="mt-4 pt-4 border-t">
+                    <a href="/admin/badges" class="text-xs text-blue-600 hover:underline">Kelola Master Badge &rarr;</a>
+                </div>
+            </div>
+
+        </div>
     </div>
+</form>
 
-<?= $this->endSection() ?>
+<template id="linkRowTemplate">
+    <div class="link-row grid grid-cols-12 gap-3 items-end bg-blue-50 p-3 rounded-lg border border-blue-100 animate-pulse-once">
+        <div class="col-span-3">
+            <select name="links[INDEX][marketplace_id]" class="w-full text-sm rounded border-gray-300">
+                <?php foreach($marketplaces as $mp): ?>
+                    <option value="<?= $mp->id ?>"><?= $mp->name ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="col-span-3">
+            <input type="text" name="links[INDEX][store_name]" placeholder="Nama Toko" class="w-full text-sm rounded border-gray-300">
+        </div>
+        <div class="col-span-2">
+            <input type="number" name="links[INDEX][price]" placeholder="Harga" class="w-full text-sm rounded border-gray-300">
+        </div>
+        <div class="col-span-3">
+            <input type="text" name="links[INDEX][url]" placeholder="https://..." class="w-full text-sm rounded border-gray-300">
+        </div>
+        <div class="col-span-1 text-center">
+            <button type="button" onclick="this.closest('.link-row').remove()" class="text-red-500 hover:text-red-700">×</button>
+        </div>
+    </div>
+</template>
 
-<?= $this->section('scripts') ?>
-    <?= $this->include('partials/product_form_script') ?>
+<script>
+    // Auto Slug
+    document.getElementById('nameInput').addEventListener('input', function(e) {
+        let slug = e.target.value.toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '-');
+        document.getElementById('slugInput').value = slug;
+    });
+
+    // Dynamic Link Rows
+    let linkIndex = <?= isset($product->links) ? count($product->links) : 0 ?>;
+
+    function addLinkRow() {
+        const template = document.getElementById('linkRowTemplate');
+        const container = document.getElementById('linksContainer');
+        const emptyMsg = document.getElementById('emptyLinkMsg');
+        
+        if(emptyMsg) emptyMsg.style.display = 'none';
+
+        // Clone template
+        let clone = template.content.cloneNode(true);
+        
+        // Replace INDEX placeholder with unique number
+        let html = clone.querySelector('div').outerHTML;
+        html = html.replace(/INDEX/g, linkIndex);
+        
+        // Insert to DOM (Hack karena template content is fragment)
+        let tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        container.appendChild(tempDiv.firstChild);
+
+        linkIndex++;
+    }
+</script>
+
 <?= $this->endSection() ?>

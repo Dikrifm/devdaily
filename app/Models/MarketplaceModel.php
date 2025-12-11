@@ -3,18 +3,15 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-use App\Entities\Link;
+use App\Entities\Marketplace;
 
-class LinkModel extends Model
+class MarketplaceModel extends Model
 {
-    protected $table            = 'links';
+    protected $table            = 'marketplaces';
     protected $primaryKey       = 'id';
-    protected $returnType       = Link::class;
+    protected $returnType       = Marketplace::class;
     protected $useSoftDeletes   = true;
-    protected $allowedFields    = [
-        'product_id', 'marketplace_id', 'store_name', 
-        'price', 'url', 'rating', 'sold_count', 'seller_badge'
-    ];
+    protected $allowedFields    = ['name', 'slug', 'icon', 'color'];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
